@@ -1,5 +1,6 @@
-package com.project.app.Alpha;
+package com.project.app.Alpha.Service;
 
+import com.project.app.Alpha.Model.FileDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;

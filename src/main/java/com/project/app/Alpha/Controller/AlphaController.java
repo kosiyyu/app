@@ -1,11 +1,11 @@
-package com.project.app.Alpha;
+package com.project.app.Alpha.Controller;
 
+import com.project.app.Alpha.Model.FileDto;
+import com.project.app.Alpha.Service.FileManager;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
 @RestController
 @RequestMapping("/alpha")
