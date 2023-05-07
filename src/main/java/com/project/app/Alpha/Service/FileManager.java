@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+@Service
 public class FileManager {
 
     public boolean saveFile(FileDto fileDto) throws IOException {
@@ -20,8 +21,8 @@ public class FileManager {
         return true;
     }
 
-    public boolean saveLargeFile(MultipartFile mpFile) throws IOException {
-        String path = "src/main/resources/files/" + mpFile.getOriginalFilename();
+    public boolean saveLargeFile(MultipartFile mpFile, String originalFileName) throws IOException {
+        String path = "src/main/resources/files/" + originalFileName;
         OutputStream file = new FileOutputStream(path);
         file.write(mpFile.getBytes());
         file.flush();
