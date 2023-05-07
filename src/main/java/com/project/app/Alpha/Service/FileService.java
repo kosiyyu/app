@@ -1,28 +1,21 @@
 package com.project.app.Alpha.Service;
 
-import com.project.app.Alpha.Model.FileDto;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
 @Service
-public class FileManager {
+public class FileService {
 
-    public boolean saveFile(FileDto fileDto) throws IOException {
-        String path = "src/main/resources/files/" + fileDto.getFileName() + "." + fileDto.getFileExtension();
-        OutputStream file = new FileOutputStream(path);
-        file.write(fileDto.getBytes());
-        file.flush();
-        file.close();
-        return true;
-    }
+    @Value("${FILES_PATH}")
+    private String filesPath;
 
     public boolean saveLargeFile(MultipartFile mpFile, String originalFileName) throws IOException {
-        String path = "src/main/resources/files/" + originalFileName;
+        String path = filesPath + originalFileName;
         OutputStream file = new FileOutputStream(path);
         file.write(mpFile.getBytes());
         file.flush();

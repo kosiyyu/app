@@ -1,28 +1,31 @@
 package com.project.app.Alpha.Model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.util.Date;
+
 @Document(collection = "test_data")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TestData {
+public class Metadata {
 
-    public TestData(String fullFilename, String path){
+    public Metadata(String fullFilename, String path){
         this.fullFilename = fullFilename;
         this.path = path;
+        this.lastModification = new Date();
     }
 
     @MongoId
     private String id;
 
-    @JsonProperty("full_filename")
     private String fullFilename;
 
     private String path;
+
+    private Date lastModification;
 }
