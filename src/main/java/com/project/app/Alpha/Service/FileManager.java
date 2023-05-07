@@ -1,6 +1,7 @@
 package com.project.app.Alpha.Service;
 
 import com.project.app.Alpha.Model.FileDto;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -19,10 +20,12 @@ public class FileManager {
         return true;
     }
 
-    //much faster, because we do not load file into memory but save it(transfer) directly to disk
     public boolean saveLargeFile(MultipartFile mpFile) throws IOException {
         String path = "src/main/resources/files/" + mpFile.getOriginalFilename();
-        mpFile.transferTo(new File(path));
+        OutputStream file = new FileOutputStream(path);
+        file.write(mpFile.getBytes());
+        file.flush();
+        file.close();
         return true;
     }
 }

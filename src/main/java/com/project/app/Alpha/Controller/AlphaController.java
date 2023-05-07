@@ -26,10 +26,13 @@ public class AlphaController {
     }
 
     @PostMapping("/large")
-    public String postAlphaLarge(@RequestBody MultipartFile multipartFile) throws IOException {
+    public String postAlphaLarge(@RequestParam("document") MultipartFile multipartFile) throws IOException {
 
         FileManager fileManager = new FileManager();
-        //fileManager.saveLargeFile(multipartFile);
+
+        //System.out.println(multipartFile.getName()  + " " + multipartFile.getOriginalFilename());
+
+        fileManager.saveLargeFile(multipartFile);
 
         return multipartFile.getBytes().toString();
     }
