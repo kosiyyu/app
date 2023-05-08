@@ -1,7 +1,7 @@
-package com.project.app.Alpha.Controller;
+package com.project.app.alpha.Controller;
 
-import com.project.app.Alpha.Model.Metadata;
-import com.project.app.Alpha.Service.MetadataService;
+import com.project.app.alpha.Model.Metadata;
+import com.project.app.alpha.Service.MetadataService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

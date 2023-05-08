@@ -1,7 +1,7 @@
-package com.project.app.Alpha.Service;
+package com.project.app.alpha.Service;
 
-import com.project.app.Alpha.Model.Metadata;
-import com.project.app.Alpha.Repository.MetadataRepository;
+import com.project.app.alpha.Model.Metadata;
+import com.project.app.alpha.Repository.MetadataRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -1,6 +1,6 @@
-package com.project.app.Alpha.Service;
+package com.project.app.alpha.Service;
 
-import com.project.app.Alpha.Model.Metadata;
+import com.project.app.alpha.Model.Metadata;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,7 +31,7 @@ public class FileMetadataService {
         metadata = metadataService.add(metadata);
 
         //save in dir
-        fileService.saveLargeFile(multipartFile, metadata.getId() + extentionWithDot);
+        fileService.saveLargeFile(multipartFile.getBytes(), metadata.getId() + extentionWithDot);
 
         //not needed, but I will keep it for now ;))
         return multipartFile.getBytes().toString();

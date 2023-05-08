@@ -1,6 +1,6 @@
-package com.project.app.Alpha.Controller;
+package com.project.app.alpha.Controller;
 
-import com.project.app.Alpha.Service.FileMetadataService;
+import com.project.app.alpha.Service.FileMetadataService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

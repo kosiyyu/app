@@ -1,4 +1,4 @@
-package com.project.app.Alpha.Service;
+package com.project.app.alpha.Service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,10 +14,10 @@ public class FileService {
     @Value("${FILES_PATH}")
     private String filesPath;
 
-    public boolean saveLargeFile(MultipartFile mpFile, String originalFileName) throws IOException {
+    public boolean saveLargeFile(byte[] bytes, String originalFileName) throws IOException {
         String path = filesPath + originalFileName;
         OutputStream file = new FileOutputStream(path);
-        file.write(mpFile.getBytes());
+        file.write(bytes);
         file.flush();
         file.close();
         return true;

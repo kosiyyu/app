@@ -1,7 +1,9 @@
-package com.project.app.Alpha.Repository;
+package com.project.app.alpha.Repository;
 
-import com.project.app.Alpha.Model.Metadata;
+import com.project.app.alpha.Model.Metadata;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface MetadataRepository extends MongoRepository<Metadata, String> {
 }
