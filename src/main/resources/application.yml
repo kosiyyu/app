@@ -1,0 +1,23 @@
+FILES_PATH: src/main/resources/files/
+
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;databaseName=Test;user=sa;password=Ala_Ma_K0ta;encrypt=true;trustServerCertificate=true
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.SQLServer2012Dialect
+        ddl-auto: create-drop
+    generate-ddl: true
+  servlet:
+    multipart:
+      max-file-size: 10GB
+      max-request-size: 10GB
+
+
+# Links
+# https://stackoverflow.com/questions/34177873/max-limit-of-multipartfile-in-spring-boot

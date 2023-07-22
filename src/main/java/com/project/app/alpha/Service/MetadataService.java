@@ -1,7 +1,7 @@
 package com.project.app.alpha.Service;
 
-import com.project.app.alpha.Model.Metadata;
-import com.project.app.alpha.Repository.MetadataRepository;
+import com.project.app.alpha.Model.FileMetadata;
+import com.project.app.alpha.Repository.FileMetadataRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,21 +9,21 @@ import java.util.List;
 @Service
 public class MetadataService {
 
-    private final MetadataRepository metadataRepository;
+    private final FileMetadataRepository fileMetadataRepository;
 
-    public MetadataService(MetadataRepository metadataRepository){
-        this.metadataRepository = metadataRepository;
+    public MetadataService(FileMetadataRepository fileMetadataRepository){
+        this.fileMetadataRepository = fileMetadataRepository;
     }
 
-    public Metadata add(Metadata metaData){
-        return this.metadataRepository.save(metaData);
+    public FileMetadata add(FileMetadata metaData){
+        return this.fileMetadataRepository.save(metaData);
     }
 
-    public List<Metadata> findAll(){
-        return metadataRepository.findAll();
+    public List<FileMetadata> findAll(){
+        return fileMetadataRepository.findAll();
     }
 
-    public Metadata get(String fullFilename){
-        return metadataRepository.findById(fullFilename).get();
+    public FileMetadata get(String fullFilename){
+        return fileMetadataRepository.findById(fullFilename).get();
     }
 }

@@ -1,6 +1,6 @@
 package com.project.app.alpha.Service;
 
-import com.project.app.alpha.Model.Metadata;
+import com.project.app.alpha.Model.FileMetadata;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,11 +27,11 @@ public class FileMetadataService {
         String extentionWithDot = originalFileName.substring(originalFileName.lastIndexOf('.') == -1 ? 0 : originalFileName.lastIndexOf('.'));
 
         //save in db
-        Metadata metadata = new Metadata(originalFileName, filesPath);
-        metadata = metadataService.add(metadata);
+        FileMetadata fileMetadata = new FileMetadata(originalFileName, filesPath);
+        fileMetadata = metadataService.add(fileMetadata);
 
         //save in dir
-        fileService.saveLargeFile(multipartFile.getBytes(), metadata.getId() + extentionWithDot);
+        fileService.saveLargeFile(multipartFile.getBytes(), fileMetadata.getId() + extentionWithDot);
 
         //not needed, but I will keep it for now ;))
         return multipartFile.getBytes().toString();

@@ -1,27 +1,31 @@
 package com.project.app.alpha.Model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.MongoId;
+
 
 import java.util.Date;
 
-@Document(collection = "test_data")
+@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Metadata {
+public class FileMetadata {
 
-    public Metadata(String fullFilename, String path){
+    public FileMetadata(String fullFilename, String path){
         this.fullFilename = fullFilename;
         this.path = path;
         this.lastModification = new Date();
     }
 
-    @MongoId
-    private String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
 
     private String fullFilename;
 
