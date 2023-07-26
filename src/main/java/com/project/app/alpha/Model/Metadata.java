@@ -15,9 +15,9 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FileMetadata {
+public class Metadata {
 
-    public FileMetadata(String fullFilename, String path){
+    public Metadata(String fullFilename, String path){
         this.fullFilename = fullFilename;
         this.path = path;
         this.lastModification = new Date();

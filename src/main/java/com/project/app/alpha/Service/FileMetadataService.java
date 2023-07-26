@@ -1,11 +1,12 @@
 package com.project.app.alpha.Service;
 
-import com.project.app.alpha.Model.FileMetadata;
+import com.project.app.alpha.Model.Metadata;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public class FileMetadataService {
@@ -22,21 +23,25 @@ public class FileMetadataService {
         this.fileService = fileService;
     }
 
-    public String save(MultipartFile multipartFile) throws IOException {
-        String originalFileName = multipartFile.getOriginalFilename();
-        String extentionWithDot = originalFileName.substring(originalFileName.lastIndexOf('.') == -1 ? 0 : originalFileName.lastIndexOf('.'));
+    public void save(MultipartFile multipartFile) throws IOException {
 
-        //save in db
-        FileMetadata fileMetadata = new FileMetadata(originalFileName, filesPath);
-        fileMetadata = metadataService.add(fileMetadata);
+        // SAVE METADATA TO DATABASE
+        Metadata metadata = new Metadata(multipartFile.getOriginalFilename(), filesPath);
+        metadataService.save(metadata);
 
-        //save in dir
-        fileService.saveLargeFile(multipartFile.getBytes(), fileMetadata.getId() + extentionWithDot);
-
-        //not needed, but I will keep it for now ;))
-        return multipartFile.getBytes().toString();
+        // SAVE FILE TO DIRECTORY
+        fileService.save(multipartFile);
     }
 
+    public void saveList(List<MultipartFile> multipartFileList) throws IOException {
 
+        // SAVE METADATA LIST TO DATABASE
+        List<Metadata> metadataList = multipartFileList.stream()
+                .map(x -> new Metadata(x.getOriginalFilename(), filesPath))
+                .toList();
+        metadataService.saveList(metadataList);
 
+        // SAVE FILE LIST TO DIRECTORY
+        fileService.saveList(multipartFileList);
+    }
 }

@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 @Service
 public class FileService {
@@ -14,12 +15,20 @@ public class FileService {
     @Value("${FILES_PATH}")
     private String filesPath;
 
-    public boolean saveLargeFile(byte[] bytes, String originalFileName) throws IOException {
+    public void save(MultipartFile multipartFile) throws IOException {
+        byte[] bytes = multipartFile.getBytes();
+        String originalFileName = multipartFile.getOriginalFilename();
+
         String path = filesPath + originalFileName;
         OutputStream file = new FileOutputStream(path);
         file.write(bytes);
         file.flush();
         file.close();
-        return true;
+    }
+
+    public void saveList(List<MultipartFile> multipartFileList) throws IOException {
+        for(var m : multipartFileList){
+            save(m);
+        }
     }
 }
