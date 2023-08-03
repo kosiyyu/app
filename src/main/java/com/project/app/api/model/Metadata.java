@@ -1,4 +1,4 @@
-package com.project.app.alpha.Model;
+package com.project.app.api.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,6 +25,7 @@ public class Metadata {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+
     private int id;
 
     private String fullFilename;

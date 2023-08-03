@@ -1,6 +1,6 @@
-package com.project.app.alpha.Service;
+package com.project.app.api.service;
 
-import com.project.app.alpha.Model.Metadata;
+import com.project.app.api.model.Metadata;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

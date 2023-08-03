@@ -1,6 +1,6 @@
-package com.project.app.alpha.Repository;
+package com.project.app.api.repository;
 
-import com.project.app.alpha.Model.Metadata;
+import com.project.app.api.model.Metadata;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
