@@ -1,4 +1,4 @@
-package com.project.app.api.model;
+package com.project.app.api.entity;
 
 import com.project.app.tools.TagValue;
 import jakarta.persistence.Entity;
@@ -21,6 +21,6 @@ public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     int id;
-    @TagValue
+    //@TagValue
     String value;
 }
