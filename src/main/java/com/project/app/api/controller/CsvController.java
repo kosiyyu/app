@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/alpha")
+@RequestMapping("${API_V1}")
 public class CsvController {
 
     private final CsvService csvService;
@@ -21,7 +21,7 @@ public class CsvController {
         this.csvService = csvService;
     }
 
-    @PostMapping("post/csv")
+    @PostMapping("csv/upload")
     public ResponseEntity<String> postCsv(@RequestParam("csv") MultipartFile multipartFile) throws IOException {
         csvService.getDataFromCsv(multipartFile.getBytes());
         return ResponseEntity.status(HttpStatus.CREATED).body("success");

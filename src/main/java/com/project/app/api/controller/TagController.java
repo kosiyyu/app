@@ -1,19 +1,17 @@
 package com.project.app.api.controller;
 
-import com.project.app.api.model.Tag;
+import com.project.app.api.entity.Tag;
 import com.project.app.api.service.TagService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/alpha")
+@RequestMapping("${API_V1}")
 public class TagController {
 
     private final TagService tagService;
@@ -21,19 +19,19 @@ public class TagController {
     public TagController(TagService tagService){
         this.tagService = tagService;
     }
-    @PostMapping("/post/tag")
+    @PostMapping("/tag/upload")
     public ResponseEntity<String> postTag(@RequestBody Tag tag) throws IOException {
         tagService.save(tag);
         return ResponseEntity.status(HttpStatus.CREATED).body("Tag created successfully.");
     }
 
-    @GetMapping("/all")
+    @GetMapping("/tags/download")
     public ResponseEntity<List<Tag>> getAllTags(){
         List<Tag> tags = tagService.getAll();
-        return ResponseEntity.status(HttpStatus.FOUND).body(tags);
+        return ResponseEntity.status(HttpStatus.OK).body(tags);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/tag/download/{id}")
     public ResponseEntity<?> get(@PathVariable String id){
         Tag tag;
         try{

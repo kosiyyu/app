@@ -1,6 +1,6 @@
 package com.project.app.api.service;
 
-import com.project.app.api.model.Tag;
+import com.project.app.api.entity.Tag;
 import com.project.app.api.repository.TagRepository;
 import org.springframework.stereotype.Service;
 

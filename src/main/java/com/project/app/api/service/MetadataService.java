@@ -1,6 +1,6 @@
 package com.project.app.api.service;
 
-import com.project.app.api.model.Metadata;
+import com.project.app.api.entity.Metadata;
 import com.project.app.api.repository.FileMetadataRepository;
 import org.springframework.stereotype.Service;
 
