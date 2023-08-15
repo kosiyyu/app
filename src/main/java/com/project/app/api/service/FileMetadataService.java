@@ -12,7 +12,7 @@ import java.util.List;
 @Service
 public class FileMetadataService {
 
-    @Value("${FILES_PATH}")
+    @Value("${FILE_PATH}")
     private String filesPath;
 
     private final MetadataService metadataService;
@@ -24,16 +24,6 @@ public class FileMetadataService {
         this.fileService = fileService;
     }
 
-    public void save(MultipartFile multipartFile) throws IOException {
-
-        // SAVE METADATA TO DATABASE
-        Metadata metadata = new Metadata(multipartFile.getOriginalFilename(), filesPath);
-        metadataService.save(metadata);
-
-        // SAVE FILE TO DIRECTORY
-        fileService.save(multipartFile);
-    }
-
     public void saveRecord(MultipartFileTagRecord multipartFileTagRecord) throws IOException {
 
         // SAVE METADATA TO DATABASE
@@ -42,22 +32,10 @@ public class FileMetadataService {
                 filesPath,
                 multipartFileTagRecord.tags()
                 );
-        metadataService.save(metadata);
+        metadata = metadataService.save(metadata);
 
         // SAVE FILE TO DIRECTORY
-        fileService.save(multipartFileTagRecord.multipartFile());
-    }
-
-    public void saveList(List<MultipartFile> multipartFileList) throws IOException {
-
-        // SAVE METADATA LIST TO DATABASE
-        List<Metadata> metadataList = multipartFileList.stream()
-                .map(x -> new Metadata(x.getOriginalFilename(), filesPath))
-                .toList();
-        metadataService.saveList(metadataList);
-
-        // SAVE FILE LIST TO DIRECTORY
-        fileService.saveList(multipartFileList);
+        fileService.save(multipartFileTagRecord.multipartFile(), Integer.toString(metadata.getId()));
     }
 
     public void saveRecordList(List<MultipartFileTagRecord> multipartFileTagRecordList) throws IOException {
@@ -66,11 +44,17 @@ public class FileMetadataService {
         List<Metadata> metadataList = multipartFileTagRecordList.stream()
                 .map(x -> new Metadata(x.multipartFile().getOriginalFilename(), filesPath, x.tags()))
                 .toList();
-        metadataService.saveList(metadataList);
+        metadataList = metadataService.saveList(metadataList);
+
+        List<String> stringList = metadataList.stream()
+                .map(x -> Integer.toString(x.getId()))
+                .toList();
+
+        List<MultipartFile> multipartFileList = multipartFileTagRecordList.stream()
+                .map(x -> x.multipartFile())
+                .toList();
 
         // SAVE FILE LIST TO DIRECTORY
-        fileService.saveList(multipartFileTagRecordList.stream()
-                .map(x -> x.multipartFile())
-                .toList());
+        fileService.saveList(multipartFileList, stringList);
     }
 }

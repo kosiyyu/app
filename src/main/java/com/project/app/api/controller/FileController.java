@@ -52,6 +52,7 @@ public class FileController {
 
         MultipartFileTagRecord multipartFileTagRecord = new MultipartFileTagRecord(multipartFile, tags);
         fileMetadataService.saveRecord(multipartFileTagRecord);
+
         return ResponseEntity.status(HttpStatus.CREATED).body("");
     }
 

@@ -1,15 +1,37 @@
-### *For me
-- To start db use:
+
+# Docs
+
+## 1.TO DO
+
+## 2. Database
+
+### 2.1 Docker
+
+- Start working with postgres container
 ```
-docker start mssql-2022
+docker pull postgres:15.4
 ```
 
-- To exec db use:
 ```
-docker exec -d mssql-2022 /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ala_Ma_K0ta
+docker run --name postgres-15.4 -e POSTGRES_PASSWORD="Ala_Ma_K0ta" -p 5433:5432 -d postgres:15.4
 ```
 
-- To correctly turn off db:
 ```
-docker exec -it mssql-2022 /bin/bash -c '/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Ala_Ma_K0ta -Q "SHUTDOWN;"'
+docker stop postgres-15.4
+```
+
+```
+docker start postgres-15.4
+```
+
+- Open command line within postgres
+
+```
+docker exec -it postgres-15.4 psql -U postgres
+```
+
+- Open command line & create database
+
+```
+docker exec -it postgres-15.4 psql -U postgres -c "CREATE DATABASE app;"
 ```

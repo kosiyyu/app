@@ -12,23 +12,25 @@ import java.util.List;
 @Service
 public class FileService {
 
-    @Value("${FILES_PATH}")
-    private String filesPath;
+    @Value("${FILE_PATH}")
+    private String filePath;
 
-    public void save(MultipartFile multipartFile) throws IOException {
+    public void save(MultipartFile multipartFile, String newFilename) throws IOException {
         byte[] bytes = multipartFile.getBytes();
-        String originalFileName = multipartFile.getOriginalFilename();
+        String originalFilename = multipartFile.getOriginalFilename();
+        String originalFileExtension = originalFilename.contains(".") ? originalFilename.substring(originalFilename.lastIndexOf(".")) : "";
 
-        String path = filesPath + originalFileName;
+        String path = filePath + newFilename + originalFileExtension;
+
         OutputStream file = new FileOutputStream(path);
         file.write(bytes);
         file.flush();
         file.close();
     }
 
-    public void saveList(List<MultipartFile> multipartFileList) throws IOException {
-        for(var m : multipartFileList){
-            save(m);
+    public void saveList(List<MultipartFile> multipartFileList, List<String> stringList) throws IOException {
+        for(int i = 0; i < multipartFileList.size(); i++){
+            save(multipartFileList.get(i), stringList.get(i));
         }
     }
 }
