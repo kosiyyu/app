@@ -5,6 +5,7 @@ import com.project.app.api.repository.FileMetadataRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MetadataService {
@@ -27,7 +28,7 @@ public class MetadataService {
         return fileMetadataRepository.findAll();
     }
 
-    public Metadata find(String fullFilename) {
-        return fileMetadataRepository.findById(fullFilename).get();
+    public Optional<Metadata> find(int id) {
+        return fileMetadataRepository.findById(id);
     }
 }

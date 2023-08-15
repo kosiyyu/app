@@ -15,15 +15,16 @@ import java.util.List;
 @AllArgsConstructor
 public class Metadata {
 
-    public Metadata(String fullFilename, String path, List<Tag> tags){
-        this.fullFilename = fullFilename;
+    public Metadata(String originalFilename, String path, List<Tag> tags){
+        this.originalFilename = originalFilename;
+
         this.path = path;
         this.lastModification = new Date();
         this.tags = tags;
     }
 
-    public Metadata(String fullFilename, String path){
-        this.fullFilename = fullFilename;
+    public Metadata(String originalFilename, String path){
+        this.originalFilename = originalFilename;
         this.path = path;
         this.lastModification = new Date();
     }
@@ -33,7 +34,7 @@ public class Metadata {
 
     private int id;
 
-    private String fullFilename;
+    private String originalFilename;
 
     private String path;
 
