@@ -1,32 +1,24 @@
 package com.project.app.api.controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.project.app.api.dto.MetadataFileDto;
 import com.project.app.api.entity.Metadata;
 import com.project.app.api.entity.Tag;
-import com.project.app.api.model.MultipartFileTagRecord;
+import com.project.app.api.dto.MultipartFileTagDto;
 import com.project.app.api.service.FileMetadataService;
 import com.project.app.api.service.MetadataService;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.lang.model.type.ReferenceType;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @RestController
 @RequestMapping("${API_V1}")
@@ -55,8 +47,8 @@ public class FileController {
             }
         }
 
-        MultipartFileTagRecord multipartFileTagRecord = new MultipartFileTagRecord(multipartFile, tags);
-        fileMetadataService.saveRecord(multipartFileTagRecord);
+        MultipartFileTagDto multipartFileTagDto = new MultipartFileTagDto(multipartFile, tags);
+        fileMetadataService.saveRecord(multipartFileTagDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("");
     }
@@ -68,8 +60,8 @@ public class FileController {
 //            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Invalid file and tag sizes.");
 //        }
 //
-//        List<MultipartFileTagRecord> multipartFileTagRecordList = IntStream.range(0, multipartFiles.size())
-//                .mapToObj(x -> new MultipartFileTagRecord(multipartFiles.get(x), tags.get(x)))
+//        List<MultipartFileTagDto> multipartFileTagRecordList = IntStream.range(0, multipartFiles.size())
+//                .mapToObj(x -> new MultipartFileTagDto(multipartFiles.get(x), tags.get(x)))
 //                .collect(Collectors.toList());
 //        fileMetadataService.saveRecordList(multipartFileTagRecordList);
 //
@@ -78,30 +70,13 @@ public class FileController {
     }
 
     @GetMapping(value = "/file/download/{id}")
-    @ResponseBody
     public ResponseEntity<?> getFile(@PathVariable String id){
-
-        Metadata metadata;
-        String json;
         try{
-            metadata = metadataService.find(Integer.parseInt(id)).orElseThrow();
-            String path = metadata.getPath()
-                    + metadata.getId()
-                    + (metadata.getOriginalFilename().contains(".") ? metadata.getOriginalFilename().substring(metadata.getOriginalFilename().lastIndexOf(".")) : "");
-
-            byte[] fileByteArray = Files.readAllBytes(Path.of(path));
-
-            String encodedByteArray = Base64.getEncoder().encodeToString(fileByteArray);
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            ObjectNode objectNode = objectMapper.createObjectNode();
-
-            objectNode.put("id", metadata.getId());
-            objectNode.put("filename", metadata.getOriginalFilename());
-            objectNode.put("encodedByteArray", encodedByteArray);
-
-            json = objectMapper.writeValueAsString(objectNode);
+            String json = fileMetadataService.get(Integer.parseInt(id));
             return ResponseEntity.status(HttpStatus.OK).body(json);
+        }
+        catch (NumberFormatException numberFormatException){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Provided id is invalid.");
         }
         catch (NoSuchElementException noSuchElementException){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("File with provided id do not exist.");
