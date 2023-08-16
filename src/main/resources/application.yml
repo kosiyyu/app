@@ -13,7 +13,7 @@ spring:
   jpa:
     properties:
       hibernate:
-#        dialect: org.hibernate.dialect.PostgresSQLDialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         ddl-auto: create-drop
     generate-ddl: true
   servlet:
@@ -21,9 +21,9 @@ spring:
       max-file-size: 10GB
       max-request-size: 10GB
 
-logging:
-  level:
-    com.project: DEBUG
+#logging:
+#  level:
+#    com.project: DEBUG
 
 
 # Links
