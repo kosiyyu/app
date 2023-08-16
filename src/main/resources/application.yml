@@ -21,5 +21,10 @@ spring:
       max-file-size: 10GB
       max-request-size: 10GB
 
+logging:
+  level:
+    com.project: DEBUG
+
+
 # Links
 # https://stackoverflow.com/questions/34177873/max-limit-of-multipartfile-in-spring-boot
