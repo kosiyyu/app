@@ -1,25 +1,3 @@
-FILE_PATH: src/main/resources/files/
-API_V1: /api/v1/
-
-server:
-  port: 8081
-
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5433/app
-    driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: Ala_Ma_K0ta
-  jpa:
-    properties:
-      hibernate:
-#        dialect: org.hibernate.dialect.PostgresSQLDialect
-        ddl-auto: create-drop
-    generate-ddl: true
-  servlet:
-    multipart:
-      max-file-size: 10GB
-      max-request-size: 10GB
-
-# Links
-# https://stackoverflow.com/questions/34177873/max-limit-of-multipartfile-in-spring-boot
+  profiles:
+    active: test

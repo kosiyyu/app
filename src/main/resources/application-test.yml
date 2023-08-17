@@ -1,0 +1,32 @@
+FILE_PATH: src/main/resources/files/
+API_V1: /api/v1/
+
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:hsqldb:mem:test
+    driver-class-name: org.hsqldb.jdbc.JDBCDriver
+    username: sa
+    password:
+#    hikari:
+#      maximum-pool-size: 1
+#      max-lifetime: 0
+  h2:
+    console:
+      enabled: true
+  jpa:
+    properties:
+      hibernate:
+        ddl-auto: create-drop
+    generate-ddl: true
+    database-platform: org.hibernate.dialect.HSQLDialect
+  servlet:
+    multipart:
+      max-file-size: 10GB
+      max-request-size: 10GB
+
+#logging:
+#  level:
+#    root: debug
