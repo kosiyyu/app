@@ -1,10 +1,7 @@
 package com.project.app.api.entity;
 
 import com.project.app.tools.TagValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +17,10 @@ public class Tag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     int id;
+
     //@TagValue
+    @Column(name = "value")
     String value;
 }

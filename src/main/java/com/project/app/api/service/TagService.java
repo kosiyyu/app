@@ -27,4 +27,12 @@ public class TagService {
     public Optional<Tag> get(int id){
         return tagRepository.findById(id);
     }
+
+    public boolean contains(String value){
+        return tagRepository.existsByValue(value);
+    }
+
+    public Optional<Tag> getByValue(String value){
+        return tagRepository.findByValue(value);
+    }
 }
