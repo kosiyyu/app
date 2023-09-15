@@ -39,7 +39,7 @@ public class ArticleService {
     public Article saveArticleWithUniqueTags(Article article) {
         for (int i = 0; i < article.getTags().size(); i++) {
             Tag tag = article.getTags().get(i);
-            Optional<Tag> checkTag = tagService.getByValue(tag.getValue());
+            Optional<Tag> checkTag = tagService.getFirstByValue(tag.getValue());
 
             if (checkTag.isPresent()) {
                 article.getTags().set(i, checkTag.get());

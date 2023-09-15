@@ -11,4 +11,6 @@ public interface TagRepository extends JpaRepository<Tag, Integer> {
     boolean existsByValue(String value);
 
     Optional<Tag> findByValue(String value);
+
+    Optional<Tag> findFirstByValue(String value);
 }

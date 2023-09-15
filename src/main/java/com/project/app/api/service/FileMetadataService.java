@@ -30,6 +30,19 @@ public class FileMetadataService {
         this.fileService = fileService;
     }
 
+    public void save(byte[] fileByteArray, String originalFilename) throws IOException {
+
+        // SAVE METADATA TO DATABASE
+        Metadata metadata = new Metadata(originalFilename, filesPath);
+        metadata = metadataService.save(metadata);
+
+        String extension = originalFilename.contains(".") ? originalFilename.substring(originalFilename.lastIndexOf(".")) : "";
+        String newFilename = metadata.getId() + extension;
+
+        // SAVE FILE TO DIRECTORY
+        fileService.save(fileByteArray, newFilename);
+    }
+
     public void saveRecord(MultipartFileTagDto multipartFileTagDto) throws IOException {
 
         // SAVE METADATA TO DATABASE

@@ -35,4 +35,8 @@ public class TagService {
     public Optional<Tag> getByValue(String value){
         return tagRepository.findByValue(value);
     }
+
+    public Optional<Tag> getFirstByValue(String value){
+        return tagRepository.findFirstByValue(value);
+    }
 }

@@ -1,16 +1,24 @@
 package com.project.app.api.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.project.app.api.dto.ArticleBundleDto;
+import com.project.app.api.dto.MetadataByteArrayDto;
 import com.project.app.api.entity.Article;
+import com.project.app.api.entity.Metadata;
 import com.project.app.api.service.ArticleService;
 import com.project.app.api.service.FileMetadataService;
 import com.project.app.api.service.MetadataService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -32,15 +40,12 @@ public class ArticleController {
 
     @PostMapping("/article/upload")
     public ResponseEntity<?> postArticle(@RequestParam("file") MultipartFile multipartFile, @RequestParam("jsonObject") String json) throws JsonProcessingException {
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        Article article = objectMapper.readValue(json, Article.class);
-        if (multipartFile == null) {
-            // save file & metadata
-            // todo
-        }
-
         try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Article article = objectMapper.readValue(json, Article.class);
+            if (multipartFile == null) {
+                fileMetadataService.save(multipartFile.getBytes(), multipartFile.getOriginalFilename());
+            }
             articleService.saveArticleWithUniqueTags(article);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something goes wrong." + e.getMessage());
@@ -66,11 +71,38 @@ public class ArticleController {
         return ResponseEntity.status(HttpStatus.OK).body(article);
     }
 
+//    @PostMapping("/article/bundle/upload/") old
+//    public ResponseEntity<?> postArticleBundle(@RequestBody ArticleBundleDto articleBundleDto) throws IOException {
+////        fileMetadataService.save(articleBundleDto.byteArray(), articleBundleDto.originalFilename());
+////        articleService.saveArticleWithUniqueTags(articleBundleDto.article());
+//        try {
+//            fileMetadataService.save(articleBundleDto.byteArray(), articleBundleDto.originalFilename());
+//            articleService.saveArticleWithUniqueTags(articleBundleDto.article());
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something goes wrong." + e.getMessage());
+//        }
+//
+//        return ResponseEntity.status(HttpStatus.OK).body("Article created successfully.");
+//    }
+
+    @PostMapping(value = "/article/bundle/upload/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> postArticleBundle(@RequestParam("file")MultipartFile multipartFile, @RequestParam("article") String articleJson)throws IOException {
+//        Gson gson = new Gson();
+//        Article article = gson.fromJson(articleJson, Article.class);
+        ObjectMapper objectMapper = new ObjectMapper();
+        Article article = objectMapper.readValue(articleJson, Article.class);
+        try {
+            fileMetadataService.save(multipartFile.getBytes(), multipartFile.getOriginalFilename());
+            articleService.saveArticleWithUniqueTags(article);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something goes wrong." + e.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("Article created successfully.");
+    }
+
     @GetMapping("/articles/download")
     public ResponseEntity<?> getArticles() {
         List<Article> articles = articleService.getAll();
         return ResponseEntity.status(HttpStatus.OK).body(articles);
     }
-
-
 }
