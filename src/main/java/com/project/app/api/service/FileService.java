@@ -34,6 +34,16 @@ public class FileService {
         file.close();
     }
 
+    public void save(byte[] byteArray, String newFilename) throws IOException {
+
+        String path = filePath + newFilename;
+
+        OutputStream file = new FileOutputStream(path);
+        file.write(byteArray);
+        file.flush();
+        file.close();
+    }
+
     public void saveList(List<MultipartFile> multipartFileList, List<String> stringList) throws IOException {
         for (int i = 0; i < multipartFileList.size(); i++) {
             save(multipartFileList.get(i), stringList.get(i));
