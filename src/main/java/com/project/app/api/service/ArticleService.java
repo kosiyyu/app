@@ -6,16 +6,12 @@ import com.project.app.api.repository.ArticleRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ArticleService {
-
     private final ArticleRepository articleRepository;
-
     private final TagService tagService;
 
     public ArticleService(ArticleRepository articleRepository, TagService tagService) {
@@ -40,14 +36,12 @@ public class ArticleService {
         for (int i = 0; i < article.getTags().size(); i++) {
             Tag tag = article.getTags().get(i);
             Optional<Tag> checkTag = tagService.getFirstByValue(tag.getValue());
-
             if (checkTag.isPresent()) {
                 article.getTags().set(i, checkTag.get());
             } else {
                 tagService.save(tag);
             }
         }
-
         return save(article);
     }
 }

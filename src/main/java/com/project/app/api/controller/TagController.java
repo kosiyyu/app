@@ -13,12 +13,12 @@ import java.util.NoSuchElementException;
 @RestController
 @RequestMapping("${API_V1}")
 public class TagController {
-
     private final TagService tagService;
 
-    public TagController(TagService tagService){
+    public TagController(TagService tagService) {
         this.tagService = tagService;
     }
+
     @PostMapping("/tag/upload")
     public ResponseEntity<String> postTag(@RequestBody Tag tag) throws IOException {
         tagService.save(tag);
@@ -26,21 +26,19 @@ public class TagController {
     }
 
     @GetMapping("/tags/download")
-    public ResponseEntity<List<Tag>> getAllTags(){
+    public ResponseEntity<List<Tag>> getAllTags() {
         List<Tag> tags = tagService.getAll();
         return ResponseEntity.status(HttpStatus.OK).body(tags);
     }
 
     @GetMapping("/tag/download/{id}")
-    public ResponseEntity<?> get(@PathVariable String id){
+    public ResponseEntity<?> get(@PathVariable String id) {
         Tag tag;
-        try{
+        try {
             tag = tagService.get(Integer.valueOf(id)).orElseThrow();
-        }
-        catch (NumberFormatException numberFormatException){
+        } catch (NumberFormatException numberFormatException) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Provided id must be a number.");
-        }
-        catch (NoSuchElementException noSuchElementException){
+        } catch (NoSuchElementException noSuchElementException) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Provided tag does not exists.");
         }
         return ResponseEntity.status(HttpStatus.OK).body(tag);

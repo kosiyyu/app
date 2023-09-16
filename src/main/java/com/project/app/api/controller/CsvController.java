@@ -14,10 +14,9 @@ import java.io.IOException;
 @RestController
 @RequestMapping("${API_V1}")
 public class CsvController {
-
     private final CsvService csvService;
 
-    public CsvController(CsvService csvService){
+    public CsvController(CsvService csvService) {
         this.csvService = csvService;
     }
 

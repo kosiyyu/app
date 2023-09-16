@@ -13,15 +13,14 @@ import java.util.List;
 @Controller
 @RequestMapping("${API_V1}")
 public class MetadataController {
-
     private final MetadataService metadataService;
 
-    public MetadataController(MetadataService metadataService){
+    public MetadataController(MetadataService metadataService) {
         this.metadataService = metadataService;
     }
 
     @GetMapping("/metadata/download")
-    public ResponseEntity getMetadata(){
+    public ResponseEntity getMetadata() {
         List<Metadata> metadataList = metadataService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(metadataList);
     }
