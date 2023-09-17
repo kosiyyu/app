@@ -21,12 +21,10 @@ import java.util.NoSuchElementException;
 public class ArticleController {
     private final ArticleService articleService;
     private final FileMetadataService fileMetadataService;
-    private final MetadataService metadataService;
 
-    public ArticleController(ArticleService articleService, FileMetadataService fileMetadataService, MetadataService metadataService) {
+    public ArticleController(ArticleService articleService, FileMetadataService fileMetadataService) {
         this.articleService = articleService;
         this.fileMetadataService = fileMetadataService;
-        this.metadataService = metadataService;
     }
 
     @PostMapping("/article/upload")
@@ -60,17 +58,11 @@ public class ArticleController {
         return ResponseEntity.status(HttpStatus.OK).body(article);
     }
 
-    @GetMapping("/articles/download")
-    public ResponseEntity<?> getArticles() {
-        List<Article> articles = articleService.getAll();
-        return ResponseEntity.status(HttpStatus.OK).body(articles);
-    }
-
     @PostMapping(value = "/article/bundle/upload/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> postArticleBundle(@RequestParam("file") MultipartFile multipartFile, @RequestParam("article") String articleJson) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        Article article = objectMapper.readValue(articleJson, Article.class);
         try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Article article = objectMapper.readValue(articleJson, Article.class);
             fileMetadataService.save(multipartFile.getBytes(), multipartFile.getOriginalFilename());
             articleService.saveArticleWithUniqueTags(article);
         } catch (Exception e) {
@@ -79,17 +71,9 @@ public class ArticleController {
         return ResponseEntity.status(HttpStatus.OK).body("Article created successfully.");
     }
 
-//    @PostMapping("/article/bundle/upload/") //old
-//    public ResponseEntity<?> postArticleBundle(@RequestBody ArticleBundleDto articleBundleDto) throws IOException {
-////        fileMetadataService.save(articleBundleDto.byteArray(), articleBundleDto.originalFilename());
-////        articleService.saveArticleWithUniqueTags(articleBundleDto.article());
-//        try {
-//            fileMetadataService.save(articleBundleDto.byteArray(), articleBundleDto.originalFilename());
-//            articleService.saveArticleWithUniqueTags(articleBundleDto.article());
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something goes wrong." + e.getMessage());
-//        }
-//
-//        return ResponseEntity.status(HttpStatus.OK).body("Article created successfully.");
-//    }
+    @GetMapping("/articles/download")
+    public ResponseEntity<?> getArticles() {
+        List<Article> articles = articleService.getAll();
+        return ResponseEntity.status(HttpStatus.OK).body(articles);
+    }
 }
