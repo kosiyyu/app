@@ -9,7 +9,6 @@ import java.util.Optional;
 
 @Service
 public class MetadataService {
-
     private final FileMetadataRepository fileMetadataRepository;
 
     public MetadataService(FileMetadataRepository fileMetadataRepository) {

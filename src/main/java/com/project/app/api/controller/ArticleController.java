@@ -1,14 +1,8 @@
 package com.project.app.api.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.project.app.api.dto.ArticleBundleDto;
-import com.project.app.api.dto.MetadataByteArrayDto;
 import com.project.app.api.entity.Article;
-import com.project.app.api.entity.Metadata;
 import com.project.app.api.service.ArticleService;
 import com.project.app.api.service.FileMetadataService;
 import com.project.app.api.service.MetadataService;
@@ -25,17 +19,12 @@ import java.util.NoSuchElementException;
 @RestController
 @RequestMapping("${API_V1}")
 public class ArticleController {
-
     private final ArticleService articleService;
     private final FileMetadataService fileMetadataService;
 
-    private final MetadataService metadataService;
-
-
-    public ArticleController(ArticleService articleService, FileMetadataService fileMetadataService, MetadataService metadataService) {
+    public ArticleController(ArticleService articleService, FileMetadataService fileMetadataService) {
         this.articleService = articleService;
         this.fileMetadataService = fileMetadataService;
-        this.metadataService = metadataService;
     }
 
     @PostMapping("/article/upload")
@@ -57,7 +46,6 @@ public class ArticleController {
     @GetMapping("/article/download/{id}")
     public ResponseEntity<?> getArticle(@PathVariable String id) {
         Article article;
-
         try {
             article = articleService.get(Integer.parseInt(id)).orElseThrow();
         } catch (NumberFormatException numberFormatException) {
@@ -67,31 +55,14 @@ public class ArticleController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something goes wrong.");
         }
-
         return ResponseEntity.status(HttpStatus.OK).body(article);
     }
 
-//    @PostMapping("/article/bundle/upload/") old
-//    public ResponseEntity<?> postArticleBundle(@RequestBody ArticleBundleDto articleBundleDto) throws IOException {
-////        fileMetadataService.save(articleBundleDto.byteArray(), articleBundleDto.originalFilename());
-////        articleService.saveArticleWithUniqueTags(articleBundleDto.article());
-//        try {
-//            fileMetadataService.save(articleBundleDto.byteArray(), articleBundleDto.originalFilename());
-//            articleService.saveArticleWithUniqueTags(articleBundleDto.article());
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something goes wrong." + e.getMessage());
-//        }
-//
-//        return ResponseEntity.status(HttpStatus.OK).body("Article created successfully.");
-//    }
-
     @PostMapping(value = "/article/bundle/upload/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> postArticleBundle(@RequestParam("file")MultipartFile multipartFile, @RequestParam("article") String articleJson)throws IOException {
-//        Gson gson = new Gson();
-//        Article article = gson.fromJson(articleJson, Article.class);
-        ObjectMapper objectMapper = new ObjectMapper();
-        Article article = objectMapper.readValue(articleJson, Article.class);
+    public ResponseEntity<?> postArticleBundle(@RequestParam("file") MultipartFile multipartFile, @RequestParam("article") String articleJson) throws IOException {
         try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Article article = objectMapper.readValue(articleJson, Article.class);
             fileMetadataService.save(multipartFile.getBytes(), multipartFile.getOriginalFilename());
             articleService.saveArticleWithUniqueTags(article);
         } catch (Exception e) {
