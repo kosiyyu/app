@@ -22,7 +22,11 @@ public class CsvController {
 
     @PostMapping("csv/upload")
     public ResponseEntity<String> postCsv(@RequestParam("csv") MultipartFile multipartFile) throws IOException {
-        csvService.getDataFromCsv(multipartFile.getBytes());
+        try{
+            csvService.loadCsv(multipartFile.getBytes());
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("error" + e);
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body("success");
     }
 }

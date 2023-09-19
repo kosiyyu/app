@@ -19,4 +19,12 @@ public class FileService {
         file.flush();
         file.close();
     }
+
+    public void save(byte[] byteArray, String newFilename, String filePath) throws IOException {
+        String path = filePath + newFilename;
+        OutputStream file = new FileOutputStream(path);
+        file.write(byteArray);
+        file.flush();
+        file.close();
+    }
 }

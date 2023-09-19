@@ -44,4 +44,15 @@ public class Article {
         this.eissn2 = eissn2;
         this.points = points;
     }
+
+    public Article(String title1, String issn1, String eissn1, String title2, String issn2, String eissn2, Integer points, List<Tag> tags) {
+        this.title1 = title1;
+        this.issn1 = issn1;
+        this.eissn1 = eissn1;
+        this.title2 = title2;
+        this.issn2 = issn2;
+        this.eissn2 = eissn2;
+        this.points = points;
+        this.tags = tags;
+    }
 }
