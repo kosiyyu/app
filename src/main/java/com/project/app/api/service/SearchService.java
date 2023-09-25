@@ -4,6 +4,7 @@ import com.project.app.api.dto.SearchDto;
 import com.project.app.api.entity.Article;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,11 @@ public class SearchService {
     }
 
     public List<Article> search(SearchDto searchDto) {
+        int pageNumber = 0;
+        if(searchDto.pageNumber() > 0){
+            pageNumber = searchDto.pageNumber();
+        }
+
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Article> query = criteriaBuilder.createQuery(Article.class);
         Root<Article> article = query.from(Article.class);
@@ -61,6 +67,13 @@ public class SearchService {
         } else {
             throw new RuntimeException("Invalid query");
         }
-        return entityManager.createQuery(query.select(article).where(finalCondition)).getResultList();
+
+        TypedQuery<Article> articleTypedQuery = entityManager.createQuery(query.select(article).where(finalCondition));
+
+        final int max = 10;
+        articleTypedQuery.setMaxResults(max);
+        articleTypedQuery.setFirstResult(max * pageNumber);
+
+        return articleTypedQuery.getResultList();
     }
 }

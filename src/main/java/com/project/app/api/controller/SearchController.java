@@ -23,7 +23,7 @@ public class SearchController {
 
     @GetMapping("/test")
     public ResponseEntity<?> test(){
-        List<Article> articles = searchService.search(new SearchDto("TEST", Comparison.like, null, null, SortingStrategy.asc));
+        List<Article> articles = searchService.search(new SearchDto("TEST", Comparison.like, null, null, SortingStrategy.asc, 0));
         return ResponseEntity.status(200).body(articles);
     }
 }
