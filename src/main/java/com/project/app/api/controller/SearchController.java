@@ -1,6 +1,6 @@
 package com.project.app.api.controller;
 
-import com.project.app.api.dto.TokenSearchDto;
+import com.project.app.api.dto.SearchTokenDto;
 import com.project.app.api.entity.Article;
 import com.project.app.api.service.SearchService;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +18,8 @@ public class SearchController {
     }
 
     @GetMapping("/search/download")
-    public ResponseEntity<?> test2(@RequestBody TokenSearchDto tokenSearchDto){
-        List<Article> articles = searchService.search(tokenSearchDto);
+    public ResponseEntity<?> search(@RequestBody SearchTokenDto searchTokenDto){
+        List<Article> articles = searchService.search(searchTokenDto);
         return ResponseEntity.status(200).body(articles);
     }
 }

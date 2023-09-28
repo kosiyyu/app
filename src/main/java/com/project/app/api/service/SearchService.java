@@ -1,6 +1,6 @@
 package com.project.app.api.service;
 
-import com.project.app.api.dto.TokenSearchDto;
+import com.project.app.api.dto.SearchTokenDto;
 import com.project.app.api.entity.Article;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -19,17 +19,17 @@ public class SearchService {
         this.entityManager = entityManager;
     }
 
-    public List<Article> search(TokenSearchDto tokenSearchDto) {
+    public List<Article> search(SearchTokenDto searchTokenDto) {
         int pageNumber = 0; // it's a first page id
-        if(tokenSearchDto.pageNumber() > 0){
-            pageNumber = tokenSearchDto.pageNumber();
+        if(searchTokenDto.pageNumber() > 0){
+            pageNumber = searchTokenDto.pageNumber();
         }
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Article> query = criteriaBuilder.createQuery(Article.class);
         Root<Article> article = query.from(Article.class);
 
-        Expression<String> sortingField = article.get(tokenSearchDto.sortingField());
+        Expression<String> sortingField = article.get(searchTokenDto.sortingField());
 
         Expression<String> title1 = article.get("title1");
         Expression<String> issn1 = article.get("issn1");
@@ -39,7 +39,7 @@ public class SearchService {
         Expression<String> eissn2 = article.get("eissn2");
 
         Predicate matchCondition = null;
-        if (tokenSearchDto.match() != null && tokenSearchDto.comparison() != null) {
+        if (searchTokenDto.match() != null && searchTokenDto.comparison() != null) {
             Expression<String> matchField = criteriaBuilder.concat(
                 criteriaBuilder.concat(
                     criteriaBuilder.concat(
@@ -55,21 +55,21 @@ public class SearchService {
                         criteriaBuilder.concat(eissn2, " ")
                 )
             );
-            switch (tokenSearchDto.comparison()) {
-                case like -> matchCondition = criteriaBuilder.like(matchField, "%" + tokenSearchDto.match() + "%");
-                case equal -> matchCondition = criteriaBuilder.equal(matchField, tokenSearchDto.match());
+            switch (searchTokenDto.comparison()) {
+                case like -> matchCondition = criteriaBuilder.like(matchField, "%" + searchTokenDto.match() + "%");
+                case equal -> matchCondition = criteriaBuilder.equal(matchField, searchTokenDto.match());
             }
         }
 
         Predicate numericCondition = null;
-        if (tokenSearchDto.number() != null && tokenSearchDto.operator() != null) {
+        if (searchTokenDto.number() != null && searchTokenDto.operator() != null) {
             Expression<Integer> pointsField = article.get("points");
-            switch (tokenSearchDto.operator()) {
-                case equal -> numericCondition = criteriaBuilder.equal(pointsField, tokenSearchDto.number());
-                case graterThan -> numericCondition = criteriaBuilder.greaterThan(pointsField, tokenSearchDto.number());
-                case graterOrEqualTo -> numericCondition = criteriaBuilder.greaterThanOrEqualTo(pointsField, tokenSearchDto.number());
-                case lesserThan -> numericCondition = criteriaBuilder.lessThan(pointsField, tokenSearchDto.number());
-                case lesserThanOrEqualTo -> numericCondition = criteriaBuilder.lessThanOrEqualTo(pointsField, tokenSearchDto.number());
+            switch (searchTokenDto.operator()) {
+                case equal -> numericCondition = criteriaBuilder.equal(pointsField, searchTokenDto.number());
+                case graterThan -> numericCondition = criteriaBuilder.greaterThan(pointsField, searchTokenDto.number());
+                case graterOrEqualTo -> numericCondition = criteriaBuilder.greaterThanOrEqualTo(pointsField, searchTokenDto.number());
+                case lesserThan -> numericCondition = criteriaBuilder.lessThan(pointsField, searchTokenDto.number());
+                case lesserThanOrEqualTo -> numericCondition = criteriaBuilder.lessThanOrEqualTo(pointsField, searchTokenDto.number());
             }
         }
 
@@ -88,7 +88,7 @@ public class SearchService {
         }
 
         if (finalCondition != null) {
-            switch (tokenSearchDto.sortingStrategy()) {
+            switch (searchTokenDto.sortingStrategy()) {
                 case asc -> query.orderBy(criteriaBuilder.asc(sortingField));
                 case desc -> query.orderBy(criteriaBuilder.desc(sortingField));
             }
