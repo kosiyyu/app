@@ -50,6 +50,8 @@ public class ArticleService {
 
     public List<Article> customSearch(SearchTokenDto searchTokenDto) {
         Pageable pageable = PageRequest.of(searchTokenDto.pageIndex(), searchTokenDto.pageSize());
-        return articleRepository.customSearch(searchTokenDto.searchText(),searchTokenDto.whereCondition(),searchTokenDto.orderByCondition(), pageable);
+        return searchTokenDto.isDescSort()
+                ? articleRepository.customSearchDesc(searchTokenDto.searchText(),searchTokenDto.whereCondition(),searchTokenDto.orderByCondition(), pageable)
+                : articleRepository.customSearchAsc(searchTokenDto.searchText(),searchTokenDto.whereCondition(),searchTokenDto.orderByCondition(), pageable);
     }
 }
