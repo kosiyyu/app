@@ -16,11 +16,10 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
                 SELECT a FROM Article a
                 WHERE
                     CASE
-                        WHEN :whereCondition = 'title' THEN (a.title1 LIKE %:searchText%)
-                        WHEN :whereCondition = 'issn_like' THEN (a.eissn1 LIKE %:searchText%)
-                        WHEN :whereCondition = 'eissn_equal' THEN (a.title2 = :searchText)
+                        WHEN :whereCondition = 'title_like' THEN (a.title1 LIKE CONCAT('%', :searchText, '%') OR a.title2 LIKE CONCAT('%', :searchText, '%'))
+                        WHEN :whereCondition = 'title_equal' THEN (a.title1 = :searchText OR a.title2 = :searchText)
                         ELSE TRUE
-                    END = TRUE
+                    END
                 ORDER BY
                     CASE
                         WHEN :orderByCondition = 'title1' THEN a.title1
@@ -31,9 +30,39 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
                         WHEN :orderByCondition = 'eissn2' THEN a.eissn2
                         ELSE CAST(a.id AS string)
                     END
+                ASC
             """
     )
-    public List<Article> customSearch(
+    List<Article> customSearchAsc(
+            @Param("searchText") String searchText,
+            @Param("whereCondition") String whereCondition,
+            @Param("orderByCondition") String orderByCondition,
+            Pageable pageable
+    );
+
+    @Query(
+            """
+                SELECT a FROM Article a
+                WHERE
+                    CASE
+                        WHEN :whereCondition = 'title_like' THEN (a.title1 LIKE CONCAT('%', :searchText, '%') OR a.title2 LIKE CONCAT('%', :searchText, '%'))
+                        WHEN :whereCondition = 'title_equal' THEN (a.title1 = :searchText OR a.title2 = :searchText)
+                        ELSE TRUE
+                    END
+                ORDER BY
+                    CASE
+                        WHEN :orderByCondition = 'title1' THEN a.title1
+                        WHEN :orderByCondition = 'issn1' THEN a.issn1
+                        WHEN :orderByCondition = 'eissn1' THEN a.eissn2
+                        WHEN :orderByCondition = 'title2' THEN a.title2
+                        WHEN :orderByCondition = 'issn2' THEN a.issn2
+                        WHEN :orderByCondition = 'eissn2' THEN a.eissn2
+                        ELSE CAST(a.id AS string)
+                    END
+                DESC
+            """
+    )
+    List<Article> customSearchDesc(
             @Param("searchText") String searchText,
             @Param("whereCondition") String whereCondition,
             @Param("orderByCondition") String orderByCondition,
