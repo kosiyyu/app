@@ -1,9 +1,12 @@
 package com.project.app.api.service;
 
+import com.project.app.api.dto.SearchTokenDto;
 import com.project.app.api.entity.Article;
 import com.project.app.api.entity.Tag;
 import com.project.app.api.repository.ArticleRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,5 +46,10 @@ public class ArticleService {
             }
         }
         return save(article);
+    }
+
+    public List<Article> customSearch(SearchTokenDto searchTokenDto) {
+        Pageable pageable = PageRequest.of(searchTokenDto.pageIndex(), searchTokenDto.pageSize());
+        return articleRepository.customSearch(searchTokenDto.searchText(),searchTokenDto.whereCondition(),searchTokenDto.orderByCondition(), pageable);
     }
 }

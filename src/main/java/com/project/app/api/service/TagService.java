@@ -38,4 +38,8 @@ public class TagService {
     public Optional<Tag> getFirstByValue(String value) {
         return tagRepository.findFirstByValue(value);
     }
+
+    public List<Tag> saveAll(List<Tag> tags){
+        return tagRepository.saveAll(tags);
+    }
 }
