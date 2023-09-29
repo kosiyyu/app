@@ -16,11 +16,10 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
                 SELECT a FROM Article a
                 WHERE
                     CASE
-                        WHEN :whereCondition = 'title' THEN (a.title1 LIKE %:searchText%)
-                        WHEN :whereCondition = 'issn_like' THEN (a.eissn1 LIKE %:searchText%)
-                        WHEN :whereCondition = 'eissn_equal' THEN (a.title2 = :searchText)
+                        WHEN :whereCondition = 'title_like' THEN (a.title1 LIKE CONCAT('%', :searchText, '%') OR a.title2 LIKE CONCAT('%', :searchText, '%'))
+                        WHEN :whereCondition = 'title_equal' THEN (a.title1 = :searchText OR a.title2 = :searchText)
                         ELSE TRUE
-                    END = TRUE
+                    END
                 ORDER BY
                     CASE
                         WHEN :orderByCondition = 'title1' THEN a.title1
@@ -33,7 +32,7 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
                     END
             """
     )
-    public List<Article> customSearch(
+    List<Article> customSearch(
             @Param("searchText") String searchText,
             @Param("whereCondition") String whereCondition,
             @Param("orderByCondition") String orderByCondition,
