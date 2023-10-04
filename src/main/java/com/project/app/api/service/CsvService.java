@@ -56,16 +56,17 @@ public class CsvService {
         final BufferedReader bufferedReader = new BufferedReader(new StringReader(new String(bytes, StandardCharsets.UTF_8)));
         int lineIndex = 0;
         String line = null;
-        char[] chars;
-
-        String[] values = new String[44];
+        int numberOfWords = 44;
+        Integer[] keys = new Integer[numberOfWords];
+        String[] values = new String[numberOfWords];
         Map<Integer, String> map = new HashMap<>();
         while ((line = bufferedReader.readLine()) != null) {
             if(lineIndex == 0){
                 lineIndex++;
                 int start = -1;
-                int end = -1;
+                int end = line.length();
                 int valueCounter = 0;
+                boolean isOpen = false;
                 for(int i = line.length() - 1; i >= 0; i--) {
                     if(line.charAt(i) == '"' && i == line.length() - 1){
                         end = i;
@@ -75,12 +76,14 @@ public class CsvService {
                         values[valueCounter] = line.substring(start, end);
                         valueCounter++;
                         end = i - 2;
+                        isOpen = true;
                         i -= 2;
                     }
                     else if(line.charAt(i) == ',' && line.charAt(i - 1) == '"'){
                         // end
                         start = i + 1;
                         values[valueCounter] = line.substring(start, end);
+                        isOpen = true;
                         valueCounter++;
                         end = i - 1;
                     }
@@ -88,42 +91,39 @@ public class CsvService {
                         // start
                         start = i + 2;
                         values[valueCounter] = line.substring(start, end);
+                        isOpen = false;
                         valueCounter++;
                         end = i;
                     }
-                    else if(line.charAt(i) == ','){
-
+                    else if(line.charAt(i) == ',' && line.charAt(i - 1) != '"' && line.charAt(i + 1) != '"' && !isOpen){
+                        start = i + 1;
+                        values[valueCounter] = line.substring(start, end);
+                        isOpen = false;
+                        valueCounter++;
+                        end = i;
                     }
+                    else if(i == 0){
+                        start = 0;
+                        values[valueCounter] = line.substring(start, end);
+                        isOpen = false; // doesn't matter
+                        valueCounter++;
+                    }
+
+                    if(valueCounter == numberOfWords){
+                        break;
+                    }
+                }
+                var a = "asdas";
+            }
+            // todo loop refactor
+
+            else if(lineIndex == 1){
+                // todo --> same loop for keys
+                for(int i = line.length() - 1; i >= 0; i--) {
+                    map.put(keys[i], values[i]);
                 }
             }
-
-            char []charArray = line.toCharArray();
-            Vector<Integer> split = new Vector<>();
-            String[] stringArray = new String[5];
-
-
-            // 0 1 2            3         4         5            67         8
-            // 1,1,2D Materials,2053-1583,2053-1583,2D Materials,,2053-1583,140,,,,,,,,x,x,,x,,x,x,x,,x,,,,,,,,,,,,,,,,,,,,,,,,x,x,,
-            int wordCounter = 1; // initial is 0 line.indexOf(',') witch always will be a number
-            int splitAt = 0;
-            for(int i = line.indexOf(','); i < charArray.length; i++) {
-                if(charArray[i] == ',') {
-                    if(charArray[i + 1] == '"')
-                    {
-                        split.add(i + 2);
-                    }
-                    else if(charArray[i - 1] == '"')
-                    {
-                        split.add(i - 2);
-                    }
-                    else {
-                        split.add(i);
-                    }
-                }
-                if(charArray[i + 1] == '"')
-                {
-
-                }
+            else {
             }
             lineIndex++;
         }
