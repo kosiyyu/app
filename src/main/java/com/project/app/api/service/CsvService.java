@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.rmi.RemoteException;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -53,107 +54,179 @@ public class CsvService {
         }
     }
 
-    private static void extractValues(String line, String[] values, int numberOfWords) {
-        int start = -1;
+    private static void extractMapValues(String line, int numberOfWords, Map<Integer, String> map) {
         int end = line.length();
-        int valueCounter = 0;
+        int wordCounter = 0;
         boolean isOpen = false;
         for (int i = line.length() - 1; i >= 0; i--) {
             if (line.charAt(i) == '"' && i == line.length() - 1) {
                 end = i;
             } else if (line.charAt(i) == '"' && line.charAt(i - 1) == ',' && line.charAt(i - 2) == '"') {
-                values[valueCounter] = line.substring(i + 1, end);
-                valueCounter++;
+                map.put(wordCounter, line.substring(i + 1, end));
+                wordCounter++;
                 end = i - 2;
                 isOpen = true;
                 i -= 2;
             } else if (line.charAt(i) == ',' && line.charAt(i - 1) == '"') {
-                values[valueCounter] = line.substring(i + 1, end);
+                map.put(wordCounter, line.substring(i + 1, end));
                 isOpen = true;
-                valueCounter++;
+                wordCounter++;
                 end = i - 1;
-            } else if (line.charAt(i) == ',' && line.charAt(i + 1) == '"') {
-                values[valueCounter] = line.substring(i + 2, end);
+            } else if (line.charAt(i) == ',' && i + 1 < line.length() && line.charAt(i + 1) == '"') {
+                map.put(wordCounter, line.substring(i + 2, end));
                 isOpen = false;
-                valueCounter++;
+                wordCounter++;
                 end = i;
-            } else if (line.charAt(i) == ',' && line.charAt(i - 1) != '"' && line.charAt(i + 1) != '"' && !isOpen) {
-                values[valueCounter] = line.substring(i + 1, end);
-                valueCounter++;
+            } else if (line.charAt(i) == ',' && line.charAt(i - 1) != '"' && i + 1 < line.length() && line.charAt(i + 1) != '"' && !isOpen) {
+                map.put(wordCounter, line.substring(i + 1, end));
+                wordCounter++;
                 end = i;
             } else if (i == 0) {
-                start = 0;
-                values[valueCounter] = line.substring(start, end);
-                valueCounter++;
+                map.put(wordCounter, line.substring(0, end));
+                wordCounter++;
             }
-            if (valueCounter == numberOfWords) {
+            if (wordCounter == numberOfWords) {
                 break;
             }
         }
     }
 
-    private static void extractKeys(String line, int[] keys, int numberOfWords) {
-        int start = -1;
+    private void extractArticleData(String line, int numberOfWords, int numberOfArgs, Map<Integer, String> map) {
+        List<Tag> tags = new ArrayList<>();
+        Article article = new Article();
         int end = line.length();
-        int valueCounter = 0;
+        int wordCounter = 0;
         boolean isOpen = false;
-        try {
-            for (int i = line.length() - 1; i >= 0; i--) {
+        boolean isXFound = false;
+        boolean isArgChanged = false;
+        String str = "";
+        for (int i = line.length() - 1; i >= 0; i--) {
+            if(line.charAt(i) == 'x' && !isXFound){
+                isXFound = true;
+            }
+            if(wordCounter < numberOfWords - 1){
                 if (line.charAt(i) == '"' && i == line.length() - 1) {
                     end = i;
                 } else if (line.charAt(i) == '"' && line.charAt(i - 1) == ',' && line.charAt(i - 2) == '"') {
-                    keys[valueCounter] = Integer.parseInt(line.substring(i + 1, end));
-                    valueCounter++;
+                    if(isXFound){
+                        tags.add(new Tag(map.get(wordCounter)));
+                    }
+                    isXFound = false;
+                    wordCounter++;
                     end = i - 2;
                     isOpen = true;
                     i -= 2;
                 } else if (line.charAt(i) == ',' && line.charAt(i - 1) == '"') {
-                    keys[valueCounter] = Integer.parseInt(line.substring(i + 1, end));
+                    if(isXFound){
+                        tags.add(new Tag(map.get(wordCounter)));
+                    }
+                    isXFound = false;
                     isOpen = true;
-                    valueCounter++;
+                    wordCounter++;
                     end = i - 1;
-                } else if (line.charAt(i) == ',' && line.charAt(i + 1) == '"') {
-                    keys[valueCounter] = Integer.parseInt(line.substring(i + 2, end));
+                } else if (line.charAt(i) == ',' && i + 1 < line.length() && line.charAt(i + 1) == '"') {///////////
+                    if(isXFound){
+                        tags.add(new Tag(map.get(wordCounter)));
+                    }
+                    isXFound = false;
                     isOpen = false;
-                    valueCounter++;
+                    wordCounter++;
                     end = i;
-                } else if (line.charAt(i) == ',' && line.charAt(i - 1) != '"' && line.charAt(i + 1) != '"' && !isOpen) {
-                    keys[valueCounter] = Integer.parseInt(line.substring(i + 1, end));
-                    valueCounter++;
+                } else if (line.charAt(i) == ',' && line.charAt(i - 1) != '"' && i + 1 < line.length() && line.charAt(i + 1) != '"' && !isOpen) {
+                    if(isXFound){
+                        tags.add(new Tag(map.get(wordCounter)));
+                    }
+                    isXFound = false;
+                    wordCounter++;
                     end = i;
                 } else if (i == 0) {
-                    start = 0;
-                    keys[valueCounter] = Integer.parseInt(line.substring(start, end));
-                    valueCounter++;
-                }
-                if (valueCounter == numberOfWords) {
-                    break;
+                    if(isXFound){
+                        tags.add(new Tag(map.get(wordCounter)));
+                    }
+                    isXFound = false;
+                    wordCounter++;
                 }
             }
+            else {
+                if (line.charAt(i) == '"' && i == line.length() - 1) {
+                    end = i;
+                } else if (line.charAt(i) == '"' && line.charAt(i - 1) == ',' && line.charAt(i - 2) == '"') {
+                    str = line.substring(i + 1, end);
+                    isArgChanged = true;
+                    wordCounter++;
+                    end = i - 2;
+                    isOpen = true;
+                    i -= 2;
+                } else if (line.charAt(i) == ',' && line.charAt(i - 1) == '"') {
+                    str = line.substring(i + 1, end);
+                    isArgChanged = true;
+                    isOpen = true;
+                    wordCounter++;
+                    end = i - 1;
+                } else if (line.charAt(i) == ',' && i + 1 < line.length() && line.charAt(i + 1) == '"') {
+                    str = line.substring(i + 2, end);
+                    isArgChanged = true;
+                    isOpen = false;
+                    wordCounter++;
+                    end = i;
+                } else if (line.charAt(i) == ',' && line.charAt(i - 1) != '"' && i + 1 < line.length() && line.charAt(i + 1) != '"' && !isOpen) {
+                    str = line.substring(i + 1, end);
+                    isArgChanged = true;
+                    wordCounter++;
+                    end = i;
+                } else if (i == 0) {
+                    str = line.substring(0, end);
+                    isArgChanged = true;
+                    wordCounter++;
+                }
+
+                if(isArgChanged){
+                    switch (wordCounter){
+                        case 44 -> article.setPoints(Integer.parseInt(str));
+                        case 45 -> article.setEissn2(str);
+                        case 46 -> article.setIssn2(str);
+                        case 47 -> article.setTitle2(str);
+                        case 48 -> article.setEissn1(str);
+                        case 49 -> article.setIssn1(str);
+                        case 50 -> article.setTitle1(str);
+                    }
+                    isArgChanged = false;
+                }
+
+                if(!tags.isEmpty()){
+                    article.setTags(tags);
+                }
+            }
+
+            if (wordCounter == numberOfWords + numberOfArgs - 1) {
+                break;
+            }
         }
-        catch (Exception e){
-            throw new RuntimeException("err: " + e.getMessage() + " ," + valueCounter);
+        try{
+            articleService.saveArticleWithUniqueTags(article);
+        }catch (Exception e){
+            throw new RuntimeException("err_inside");
         }
     }
 
-    public void loadCsv2(byte[] bytes) throws IOException {
+    public void extractCsvData(byte[] bytes) throws IOException {
         final BufferedReader bufferedReader = new BufferedReader(new StringReader(new String(bytes, StandardCharsets.UTF_8)));
         int lineIndex = 0;
         String line;
         int numberOfWords = 44;
-        int[] keys = new int[numberOfWords];
-        String[] values = new String[numberOfWords];
+        int numberOfArgs = 7;
         Map<Integer, String> map = new HashMap<>();
         while ((line = bufferedReader.readLine()) != null) {
             // todo loops refactor: still
             if (lineIndex == 0) {
-                extractValues(line, values, numberOfWords);
+                extractMapValues(line, numberOfWords, map);
             }
             else if(lineIndex == 1) {
-                extractKeys(line, keys, numberOfWords);
-                IntStream.range(0,numberOfWords - 1).forEach(x -> map.put(keys[x], values[x]));
+                lineIndex++;
+                continue;
             }
             else {
+                 extractArticleData(line, numberOfWords, numberOfArgs, map);
             }
             lineIndex++;
         }
