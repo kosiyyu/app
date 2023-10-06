@@ -89,8 +89,8 @@ public class CsvService {
     }
 
     private void extractArticleData(String line, int numberOfWords, int numberOfArgs, Map<Integer, String> map) {
-        List<Tag> tags = new ArrayList<>();
-        Article article = new Article();
+        final List<Tag> tags = new ArrayList<>();
+        final Article article = new Article();
         int end = line.length();
         int wordCounter = 0;
         boolean isOpen = false;
@@ -206,9 +206,9 @@ public class CsvService {
         final BufferedReader bufferedReader = new BufferedReader(new StringReader(new String(bytes, StandardCharsets.UTF_8)));
         int lineIndex = 0;
         String line;
-        int numberOfWords = 44;
-        int numberOfArgs = 7;
-        Map<Integer, String> map = new HashMap<>();
+        final int numberOfWords = 44;
+        final int numberOfArgs = 7;
+        final Map<Integer, String> map = new HashMap<>();
         while ((line = bufferedReader.readLine()) != null) {
             if (lineIndex == 0) {
                 extractMap(line, numberOfWords, map);
