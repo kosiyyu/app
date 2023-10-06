@@ -2,14 +2,11 @@ package com.project.app.api.service;
 
 import com.project.app.api.entity.Article;
 import com.project.app.api.entity.Tag;
-import org.apache.el.stream.Stream;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.rmi.RemoteException;
 import java.util.*;
-import java.util.stream.IntStream;
 
 @Service
 public class CsvService {
@@ -54,7 +51,7 @@ public class CsvService {
         }
     }
 
-    private static void extractMapValues(String line, int numberOfWords, Map<Integer, String> map) {
+    private static void extractMap(String line, int numberOfWords, Map<Integer, String> map) {
         int end = line.length();
         int wordCounter = 0;
         boolean isOpen = false;
@@ -124,7 +121,7 @@ public class CsvService {
                     isOpen = true;
                     wordCounter++;
                     end = i - 1;
-                } else if (line.charAt(i) == ',' && i + 1 < line.length() && line.charAt(i + 1) == '"') {///////////
+                } else if (line.charAt(i) == ',' && i + 1 < line.length() && line.charAt(i + 1) == '"') {
                     if(isXFound){
                         tags.add(new Tag(map.get(wordCounter)));
                     }
@@ -202,11 +199,7 @@ public class CsvService {
                 break;
             }
         }
-        try{
-            articleService.saveArticleWithUniqueTags(article);
-        }catch (Exception e){
-            throw new RuntimeException("err_inside");
-        }
+        articleService.saveArticleWithUniqueTags(article);
     }
 
     public void extractCsvData(byte[] bytes) throws IOException {
@@ -217,9 +210,8 @@ public class CsvService {
         int numberOfArgs = 7;
         Map<Integer, String> map = new HashMap<>();
         while ((line = bufferedReader.readLine()) != null) {
-            // todo loops refactor: still
             if (lineIndex == 0) {
-                extractMapValues(line, numberOfWords, map);
+                extractMap(line, numberOfWords, map);
             }
             else if(lineIndex == 1) {
                 lineIndex++;
