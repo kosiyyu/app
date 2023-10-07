@@ -2,6 +2,7 @@ package com.project.app.api.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.app.api.dto.CustomSearchDto;
 import com.project.app.api.dto.SearchTokenDto;
 import com.project.app.api.entity.Article;
 import com.project.app.api.service.ArticleService;
@@ -80,8 +81,8 @@ public class ArticleController {
 
     @GetMapping("/articles/tokenized/download")
     public ResponseEntity<?> getQuery(@RequestBody SearchTokenDto searchTokenDto) {
-        List<Article> articles = articleService.customSearch(searchTokenDto);
-        return ResponseEntity.status(HttpStatus.OK).body(articles);
+        CustomSearchDto customSearchDto = articleService.customSearch(searchTokenDto);
+        return ResponseEntity.status(HttpStatus.OK).body(customSearchDto);
     }
 }
 
