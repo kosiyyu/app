@@ -29,7 +29,7 @@ public class ArticleController {
         this.fileMetadataService = fileMetadataService;
     }
 
-    @PostMapping("/article/upload")
+    @PostMapping("/journal/upload")
     public ResponseEntity<?> postArticle(@RequestParam("file") MultipartFile multipartFile, @RequestParam("jsonObject") String json) throws JsonProcessingException {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -45,7 +45,7 @@ public class ArticleController {
         return ResponseEntity.status(HttpStatus.OK).body("Article created successfully.");
     }
 
-    @GetMapping("/article/download/{id}")
+    @GetMapping("/journal/download/{id}")
     public ResponseEntity<?> getArticle(@PathVariable String id) {
         Article article;
         try {
@@ -60,7 +60,7 @@ public class ArticleController {
         return ResponseEntity.status(HttpStatus.OK).body(article);
     }
 
-    @PostMapping(value = "/article/bundle/upload/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/journal/bundle/upload/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> postArticleBundle(@RequestParam("file") MultipartFile multipartFile, @RequestParam("article") String articleJson) throws IOException {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -73,16 +73,22 @@ public class ArticleController {
         return ResponseEntity.status(HttpStatus.OK).body("Article created successfully.");
     }
 
-    @GetMapping("/articles/download")
+    @GetMapping("/journals/download")
     public ResponseEntity<?> getArticles() {
         List<Article> articles = articleService.getAll();
         return ResponseEntity.status(HttpStatus.OK).body(articles);
     }
 
-    @GetMapping("/articles/tokenized/download")
+    @GetMapping("/journals/tokenized/download")
     public ResponseEntity<?> getQuery(@RequestBody SearchTokenDto searchTokenDto) {
         CustomSearchDto customSearchDto = articleService.customSearch(searchTokenDto);
         return ResponseEntity.status(HttpStatus.OK).body(customSearchDto);
+    }
+
+    @GetMapping("/journals/count/download")
+    public ResponseEntity<?> getCount() {
+        long count = articleService.count();
+        return ResponseEntity.status(HttpStatus.OK).body(count);
     }
 }
 
