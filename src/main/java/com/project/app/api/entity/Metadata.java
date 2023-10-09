@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
+@Table(name = "metadata")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
