@@ -1,6 +1,6 @@
 package com.project.app.api.repository;
 
-import com.project.app.api.entity.Article;
+import com.project.app.api.entity.Journal;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,10 +10,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ArticleRepository extends JpaRepository<Article, Integer> {
+public interface JournalRepository extends JpaRepository<Journal, Integer> {
     @Query(
             """
-                SELECT a FROM Article a
+                SELECT a FROM Journal a
                 WHERE
                     CASE
                         WHEN :whereCondition = 'title_like' THEN (a.title1 LIKE CONCAT('%', :searchText, '%') OR a.title2 LIKE CONCAT('%', :searchText, '%'))
@@ -33,7 +33,7 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
                 ASC
             """
     )
-    List<Article> customSearchAsc(
+    List<Journal> customSearchAsc(
             @Param("searchText") String searchText,
             @Param("whereCondition") String whereCondition,
             @Param("orderByCondition") String orderByCondition,
@@ -42,7 +42,7 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
 
     @Query(
             """
-                SELECT a FROM Article a
+                SELECT a FROM Journal a
                 WHERE
                     CASE
                         WHEN :whereCondition = 'title_like' THEN (a.title1 LIKE CONCAT('%', :searchText, '%') OR a.title2 LIKE CONCAT('%', :searchText, '%'))
@@ -62,7 +62,7 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
                 DESC
             """
     )
-    List<Article> customSearchDesc(
+    List<Journal> customSearchDesc(
             @Param("searchText") String searchText,
             @Param("whereCondition") String whereCondition,
             @Param("orderByCondition") String orderByCondition,

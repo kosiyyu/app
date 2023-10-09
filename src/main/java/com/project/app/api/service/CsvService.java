@@ -1,6 +1,6 @@
 package com.project.app.api.service;
 
-import com.project.app.api.entity.Article;
+import com.project.app.api.entity.Journal;
 import com.project.app.api.entity.Tag;
 import org.springframework.stereotype.Service;
 
@@ -11,11 +11,11 @@ import java.util.*;
 @Service
 public class CsvService {
     final private TagService tagService;
-    final private ArticleService articleService;
+    final private JournalService journalService;
 
-    public CsvService(TagService tagService, ArticleService articleService){
+    public CsvService(TagService tagService, JournalService journalService){
         this.tagService = tagService;
-        this.articleService = articleService;
+        this.journalService = journalService;
     }
     public void loadCsv(byte[] bytes) throws IOException {
 
@@ -44,8 +44,8 @@ public class CsvService {
                         localTags.add(tags.get(i));
                     }
                 }
-                Article article = new Article(arr[2], arr[3], arr[4], arr[5], arr[6], arr[7], Integer.parseInt(arr[8]), localTags);
-                articleService.saveArticleWithUniqueTags(article);
+                Journal journal = new Journal(arr[2], arr[3], arr[4], arr[5], arr[6], arr[7], Integer.parseInt(arr[8]), localTags);
+                journalService.saveJournalWithUniqueTags(journal);
             }
             index++;
         }
@@ -88,9 +88,9 @@ public class CsvService {
         }
     }
 
-    private void extractArticleData(String line, int numberOfWords, int numberOfArgs, Map<Integer, String> map) {
+    private void extractJournalData(String line, int numberOfWords, int numberOfArgs, Map<Integer, String> map) {
         final List<Tag> tags = new ArrayList<>();
-        final Article article = new Article();
+        final Journal journal = new Journal();
         int end = line.length();
         int wordCounter = 0;
         boolean isOpen = false;
@@ -179,19 +179,19 @@ public class CsvService {
 
                 if(isArgChanged){
                     switch (wordCounter){
-                        case 44 -> article.setPoints(Integer.parseInt(str));
-                        case 45 -> article.setEissn2(str);
-                        case 46 -> article.setIssn2(str);
-                        case 47 -> article.setTitle2(str);
-                        case 48 -> article.setEissn1(str);
-                        case 49 -> article.setIssn1(str);
-                        case 50 -> article.setTitle1(str);
+                        case 44 -> journal.setPoints(Integer.parseInt(str));
+                        case 45 -> journal.setEissn2(str);
+                        case 46 -> journal.setIssn2(str);
+                        case 47 -> journal.setTitle2(str);
+                        case 48 -> journal.setEissn1(str);
+                        case 49 -> journal.setIssn1(str);
+                        case 50 -> journal.setTitle1(str);
                     }
                     isArgChanged = false;
                 }
 
                 if(!tags.isEmpty()){
-                    article.setTags(tags);
+                    journal.setTags(tags);
                 }
             }
 
@@ -199,7 +199,7 @@ public class CsvService {
                 break;
             }
         }
-        articleService.saveArticleWithUniqueTags(article);
+        journalService.saveJournalWithUniqueTags(journal);
     }
 
     public void extractCsvData(byte[] bytes) throws IOException {
@@ -218,7 +218,7 @@ public class CsvService {
                 continue;
             }
             else {
-                 extractArticleData(line, numberOfWords, numberOfArgs, map);
+                 extractJournalData(line, numberOfWords, numberOfArgs, map);
             }
             lineIndex++;
         }

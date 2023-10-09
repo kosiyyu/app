@@ -2,9 +2,9 @@ package com.project.app.api.service;
 
 import com.project.app.api.dto.CustomSearchDto;
 import com.project.app.api.dto.SearchTokenDto;
-import com.project.app.api.entity.Article;
+import com.project.app.api.entity.Journal;
 import com.project.app.api.entity.Tag;
-import com.project.app.api.repository.ArticleRepository;
+import com.project.app.api.repository.JournalRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,39 +15,39 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ArticleService {
-    private final ArticleRepository articleRepository;
+public class JournalService {
+    private final JournalRepository journalRepository;
     private final TagService tagService;
 
-    public ArticleService(ArticleRepository articleRepository, TagService tagService) {
-        this.articleRepository = articleRepository;
+    public JournalService(JournalRepository journalRepository, TagService tagService) {
+        this.journalRepository = journalRepository;
         this.tagService = tagService;
     }
 
-    public Article save(Article article) {
-        return articleRepository.save(article);
+    public Journal save(Journal journal) {
+        return journalRepository.save(journal);
     }
 
-    public Optional<Article> get(int id) {
-        return articleRepository.findById(id);
+    public Optional<Journal> get(int id) {
+        return journalRepository.findById(id);
     }
 
-    public List<Article> getAll() {
-        return articleRepository.findAll();
+    public List<Journal> getAll() {
+        return journalRepository.findAll();
     }
 
     @Transactional
-    public Article saveArticleWithUniqueTags(Article article) {
-        for (int i = 0; i < article.getTags().size(); i++) {
-            Tag tag = article.getTags().get(i);
+    public Journal saveJournalWithUniqueTags(Journal journal) {
+        for (int i = 0; i < journal.getTags().size(); i++) {
+            Tag tag = journal.getTags().get(i);
             Optional<Tag> checkTag = tagService.getFirstByValue(tag.getValue());
             if (checkTag.isPresent()) {
-                article.getTags().set(i, checkTag.get());
+                journal.getTags().set(i, checkTag.get());
             } else {
                 tagService.save(tag);
             }
         }
-        return save(article);
+        return save(journal);
     }
 
     public CustomSearchDto customSearch(SearchTokenDto searchTokenDto) {
@@ -58,12 +58,12 @@ public class ArticleService {
         }
         return new CustomSearchDto(numberOfPages, searchTokenDto.pageIndex(),
                 searchTokenDto.isDescSort()
-                    ? articleRepository.customSearchDesc(searchTokenDto.searchText(),searchTokenDto.whereCondition(),searchTokenDto.orderByCondition(), pageable)
-                    : articleRepository.customSearchAsc(searchTokenDto.searchText(),searchTokenDto.whereCondition(),searchTokenDto.orderByCondition(), pageable)
+                    ? journalRepository.customSearchDesc(searchTokenDto.searchText(),searchTokenDto.whereCondition(),searchTokenDto.orderByCondition(), pageable)
+                    : journalRepository.customSearchAsc(searchTokenDto.searchText(),searchTokenDto.whereCondition(),searchTokenDto.orderByCondition(), pageable)
                 );
     }
 
     public long count() {
-        return articleRepository.count();
+        return journalRepository.count();
     }
 }

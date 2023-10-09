@@ -8,10 +8,11 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
+@Table(name = "journal")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Article {
+public class Journal {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
@@ -32,10 +33,10 @@ public class Article {
     @Column(name = "points")
     private Integer points;
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinTable(name = "article_tag", joinColumns = @JoinColumn(name = "article_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    @JoinTable(name = "journal_tag", joinColumns = @JoinColumn(name = "journal_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private List<Tag> tags;
 
-    public Article(String title1, String issn1, String eissn1, String title2, String issn2, String eissn2, Integer points) {
+    public Journal(String title1, String issn1, String eissn1, String title2, String issn2, String eissn2, Integer points) {
         this.title1 = title1;
         this.issn1 = issn1;
         this.eissn1 = eissn1;
@@ -45,7 +46,7 @@ public class Article {
         this.points = points;
     }
 
-    public Article(String title1, String issn1, String eissn1, String title2, String issn2, String eissn2, Integer points, List<Tag> tags) {
+    public Journal(String title1, String issn1, String eissn1, String title2, String issn2, String eissn2, Integer points, List<Tag> tags) {
         this.title1 = title1;
         this.issn1 = issn1;
         this.eissn1 = eissn1;
