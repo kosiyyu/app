@@ -1,6 +1,9 @@
 package com.project.app.api.repository;
 
 import com.project.app.api.entity.Journal;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -68,6 +71,19 @@ public interface JournalRepository extends JpaRepository<Journal, Integer> {
             @Param("orderByCondition") String orderByCondition,
             Pageable pageable
     );
+
+    @Query(nativeQuery = true,
+            value = """
+                select distinct j.id, j.title1, j.issn1, j.eissn1, j.title2, j.issn2, j.eissn2, j.points
+                from journal j
+                inner join journal_tag t_g on j.id = t_g.journal_id
+                inner join tag t on t_g.tag_id = t.id
+                where t.value ilike concat('%', ?1, '%') or j.title1 ilike concat('%', ?1, '%') or j.title2 ilike concat('%', ?1, '%')
+                limit ?2
+                offset ?3
+                    """
+    )
+    List<Journal> query(String whereCondition, int _limit, int _offset);
 }
 
 

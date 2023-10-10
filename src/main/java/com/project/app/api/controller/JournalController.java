@@ -84,6 +84,12 @@ public class JournalController {
         return ResponseEntity.status(HttpStatus.OK).body(customSearchDto);
     }
 
+    @GetMapping("/journals/test/download")
+    public ResponseEntity<?> aa() {
+        var var = journalService.query();
+        return ResponseEntity.status(HttpStatus.OK).body(var);
+    }
+
     @GetMapping("/journals/count/download")
     public ResponseEntity<?> getCount() {
         long count = journalService.count();

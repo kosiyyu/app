@@ -63,6 +63,12 @@ public class JournalService {
                 );
     }
 
+    public List<Journal> query (){
+        return journalRepository.query("3D", 3, 0);
+    }
+
+
+
     public long count() {
         return journalRepository.count();
     }
