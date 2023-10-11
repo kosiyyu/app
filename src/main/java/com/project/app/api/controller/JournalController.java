@@ -88,9 +88,9 @@ public class JournalController {
     }
 
     @GetMapping("/journals/test/download")
-    public ResponseEntity<?> aa() {
-        var var = queryService.query("3d", "order by j.title1",3, 0, true);
-        return ResponseEntity.status(HttpStatus.OK).body(var);
+    public ResponseEntity<?> test(@RequestBody SearchTokenDto searchTokenDto) {
+        CustomSearchDto customSearchDto = queryService.query(searchTokenDto);
+        return ResponseEntity.status(HttpStatus.OK).body(customSearchDto);
     }
 
     @GetMapping("/journals/count/download")
