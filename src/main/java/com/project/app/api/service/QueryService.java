@@ -52,7 +52,7 @@ public class QueryService {
                         "OR j.title2 ILIKE '%" + whereArgument + "%' " +
                         orderBySql;
         Query query = entityManager.createNativeQuery(sqlCount, Integer.class);
-        // count is 0 for some reason
+        // count is 0 for some reason //
         long count = query.getFirstResult();
         long numberOfPages = (long)Math.ceil((double)count / limit);
 
