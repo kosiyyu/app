@@ -4,8 +4,10 @@ import com.project.app.api.dto.CustomSearchDto;
 import com.project.app.api.dto.SearchTokenDto;
 import com.project.app.api.entity.Journal;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,9 +22,13 @@ public class QueryService {
     public CustomSearchDto query(SearchTokenDto searchTokenDto){
         String whereArgument = searchTokenDto.whereCondition();
         String orderByArgument = searchTokenDto.orderByCondition();
-        int limit = searchTokenDto.pageSize();
+        int limit = Math.min(searchTokenDto.pageSize(), 100);
         int offset = searchTokenDto.pageIndex();
         boolean isDesc = searchTokenDto.isDescSort();
+
+        if (offset < 0) {
+            return new CustomSearchDto(0, offset, Collections.emptyList());
+        }
 
         String orderBySql;
         switch(orderByArgument){
@@ -37,18 +43,19 @@ public class QueryService {
         }
 
         String sqlCount =
-                "SELECT DISTINCT count(*) " +
+                "SELECT DISTINCT count(j.id) " +
                         "FROM journal j " +
                         "INNER JOIN journal_tag t_g ON j.id = t_g.journal_id " +
                         "INNER JOIN tag t ON t_g.tag_id = t.id " +
                         "WHERE t.value ILIKE '%" + whereArgument + "%' " +
                         "OR j.title1 ILIKE '%" + whereArgument + "%' " +
                         "OR j.title2 ILIKE '%" + whereArgument + "%' " +
-                        orderBySql +
-                        "LIMIT " + limit + " " +
-                        "OFFSET " + offset;
-        long count = entityManager.createNativeQuery(sqlCount).getFirstResult();
+                        orderBySql;
+        Query query = entityManager.createNativeQuery(sqlCount, Integer.class);
+        // count is 0 for some reason
+        long count = query.getFirstResult();
         long numberOfPages = (long)Math.ceil((double)count / limit);
+
         if(offset > numberOfPages || offset < 0) {
             return new CustomSearchDto(numberOfPages, offset, Collections.emptyList());
         }
