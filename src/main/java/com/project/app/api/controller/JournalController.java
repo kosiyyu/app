@@ -7,6 +7,7 @@ import com.project.app.api.dto.SearchTokenDto;
 import com.project.app.api.entity.Journal;
 import com.project.app.api.service.JournalService;
 import com.project.app.api.service.FileMetadataService;
+import com.project.app.api.service.QueryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +23,12 @@ import java.util.NoSuchElementException;
 public class JournalController {
     private final JournalService journalService;
     private final FileMetadataService fileMetadataService;
+    private final QueryService queryService;
 
-    public JournalController(JournalService journalService, FileMetadataService fileMetadataService) {
+    public JournalController(JournalService journalService, FileMetadataService fileMetadataService, QueryService queryService) {
         this.journalService = journalService;
         this.fileMetadataService = fileMetadataService;
+        this.queryService = queryService;
     }
 
     @PostMapping("/journal/upload")
@@ -86,7 +89,7 @@ public class JournalController {
 
     @GetMapping("/journals/test/download")
     public ResponseEntity<?> aa() {
-        var var = journalService.query();
+        var var = queryService.query("3d", "order by j.title1",3, 0, true);
         return ResponseEntity.status(HttpStatus.OK).body(var);
     }
 
