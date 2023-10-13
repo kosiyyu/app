@@ -43,17 +43,15 @@ public class QueryService {
         }
 
         String sqlCount =
-                "SELECT DISTINCT count(j.id) " +
+                "SELECT COUNT(DISTINCT j.id) " +
                         "FROM journal j " +
                         "INNER JOIN journal_tag t_g ON j.id = t_g.journal_id " +
                         "INNER JOIN tag t ON t_g.tag_id = t.id " +
                         "WHERE t.value ILIKE '%" + whereArgument + "%' " +
                         "OR j.title1 ILIKE '%" + whereArgument + "%' " +
-                        "OR j.title2 ILIKE '%" + whereArgument + "%' " +
-                        orderBySql;
-        Query query = entityManager.createNativeQuery(sqlCount, Integer.class);
-        // count is 0 for some reason //
-        long count = query.getFirstResult();
+                        "OR j.title2 ILIKE '%" + whereArgument + "%' ";
+        Query query = entityManager.createNativeQuery(sqlCount, Long.class);
+        long count = (long) query.getSingleResult();
         long numberOfPages = (long)Math.ceil((double)count / limit);
 
         if(offset > numberOfPages || offset < 0) {
