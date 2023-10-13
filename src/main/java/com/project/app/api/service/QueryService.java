@@ -20,20 +20,22 @@ public class QueryService {
 
     public CustomSearchDto query(SearchTokenDto searchTokenDto){
 
+        StringBuilder stringBuilder = new StringBuilder();
+        List<String> whereArguments = searchTokenDto.whereArguments();
 
-        String whereCondition = "WHERE";
-
-        if(searchTokenDto.whereArguments().size() > 0){
-            whereCondition += " t.value ILIKE '%" + searchTokenDto.whereArguments().get(0) + "'% " +
-                    "OR j.title1 ILIKE '%" + searchTokenDto.whereArguments().get(0) + "%' " +
-                    "OR j.title2 ILIKE '%" + searchTokenDto.whereArguments().get(0) + "%' ";
+        if (!whereArguments.isEmpty()) {
+            stringBuilder.append("WHERE ");
+            for (int i = 0; i < whereArguments.size(); i++) {
+                if (i > 0) {
+                    stringBuilder.append(" OR ");
+                }
+                stringBuilder.append(" t.value ILIKE '%").append(whereArguments.get(i)).append("%' ")
+                        .append("OR j.title1 ILIKE '%").append(whereArguments.get(i)).append("%' ")
+                        .append("OR j.title2 ILIKE '%").append(whereArguments.get(i)).append("%' ");
+            }
         }
-        for(int i = 1; i <  searchTokenDto.whereArguments().size() - 1; i++){
-            whereCondition += "OR t.value ILIKE '%" + searchTokenDto.whereArguments().get(i) + "'% " +
-                    "OR j.title1 ILIKE '%" + searchTokenDto.whereArguments().get(i) + "%' " +
-                    "OR j.title2 ILIKE '%" + searchTokenDto.whereArguments().get(i) + "%' ";
-        }
 
+        String whereCondition = stringBuilder.toString();
         String orderByArgument = searchTokenDto.orderByArgument();
         int limit = Math.min(searchTokenDto.pageSize(), 100);
         int offset = searchTokenDto.pageIndex();
