@@ -81,11 +81,11 @@ public class JournalController {
         return ResponseEntity.status(HttpStatus.OK).body(journals);
     }
 
-    @GetMapping("/journals/tokenized/download")
-    public ResponseEntity<?> getQuery(@RequestBody SearchTokenDto searchTokenDto) {
-        CustomSearchDto customSearchDto = journalService.customSearch(searchTokenDto);
-        return ResponseEntity.status(HttpStatus.OK).body(customSearchDto);
-    }
+//    @GetMapping("/journals/tokenized/download")
+//    public ResponseEntity<?> getQuery(@RequestBody SearchTokenDto searchTokenDto) {
+//        CustomSearchDto customSearchDto = journalService.customSearch(searchTokenDto);
+//        return ResponseEntity.status(HttpStatus.OK).body(customSearchDto);
+//    }
 
     @GetMapping("/journals/test/download")
     public ResponseEntity<?> test(@RequestBody SearchTokenDto searchTokenDto) {

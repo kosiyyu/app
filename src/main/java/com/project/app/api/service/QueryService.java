@@ -7,7 +7,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,8 +19,22 @@ public class QueryService {
     }
 
     public CustomSearchDto query(SearchTokenDto searchTokenDto){
-        String whereArgument = searchTokenDto.whereCondition();
-        String orderByArgument = searchTokenDto.orderByCondition();
+
+
+        String whereCondition = "WHERE";
+
+        if(searchTokenDto.whereArguments().size() > 0){
+            whereCondition += " t.value ILIKE '%" + searchTokenDto.whereArguments().get(0) + "'% " +
+                    "OR j.title1 ILIKE '%" + searchTokenDto.whereArguments().get(0) + "%' " +
+                    "OR j.title2 ILIKE '%" + searchTokenDto.whereArguments().get(0) + "%' ";
+        }
+        for(int i = 1; i <  searchTokenDto.whereArguments().size() - 1; i++){
+            whereCondition += "OR t.value ILIKE '%" + searchTokenDto.whereArguments().get(i) + "'% " +
+                    "OR j.title1 ILIKE '%" + searchTokenDto.whereArguments().get(i) + "%' " +
+                    "OR j.title2 ILIKE '%" + searchTokenDto.whereArguments().get(i) + "%' ";
+        }
+
+        String orderByArgument = searchTokenDto.orderByArgument();
         int limit = Math.min(searchTokenDto.pageSize(), 100);
         int offset = searchTokenDto.pageIndex();
         boolean isDesc = searchTokenDto.isDescSort();
@@ -47,9 +60,7 @@ public class QueryService {
                         "FROM journal j " +
                         "INNER JOIN journal_tag t_g ON j.id = t_g.journal_id " +
                         "INNER JOIN tag t ON t_g.tag_id = t.id " +
-                        "WHERE t.value ILIKE '%" + whereArgument + "%' " +
-                        "OR j.title1 ILIKE '%" + whereArgument + "%' " +
-                        "OR j.title2 ILIKE '%" + whereArgument + "%' ";
+                        whereCondition;
         Query query = entityManager.createNativeQuery(sqlCount, Long.class);
         long count = (long) query.getSingleResult();
         long numberOfPages = (long)Math.ceil((double)count / limit);
@@ -63,9 +74,7 @@ public class QueryService {
                 "FROM journal j " +
                 "INNER JOIN journal_tag t_g ON j.id = t_g.journal_id " +
                 "INNER JOIN tag t ON t_g.tag_id = t.id " +
-                "WHERE t.value ILIKE '%" + whereArgument + "%' " +
-                "OR j.title1 ILIKE '%" + whereArgument + "%' " +
-                "OR j.title2 ILIKE '%" + whereArgument + "%' " +
+                whereCondition +
                 orderBySql +
                 "LIMIT " + limit + " " +
                 "OFFSET " + offset;
