@@ -50,19 +50,6 @@ public class JournalService {
         return save(journal);
     }
 
-    public CustomSearchDto customSearch(SearchTokenDto searchTokenDto) {
-        final Pageable pageable = PageRequest.of(searchTokenDto.pageIndex(), searchTokenDto.pageSize());
-        final long numberOfPages = (long)Math.ceil((double) count() / searchTokenDto.pageSize());
-        if(searchTokenDto.pageIndex() > numberOfPages || searchTokenDto.pageIndex() < 0) {
-            return new CustomSearchDto(numberOfPages, searchTokenDto.pageIndex(), Collections.emptyList());
-        }
-        return new CustomSearchDto(numberOfPages, searchTokenDto.pageIndex(),
-                searchTokenDto.isDescSort()
-                    ? journalRepository.customSearchDesc(searchTokenDto.searchText(),searchTokenDto.whereCondition(),searchTokenDto.orderByCondition(), pageable)
-                    : journalRepository.customSearchAsc(searchTokenDto.searchText(),searchTokenDto.whereCondition(),searchTokenDto.orderByCondition(), pageable)
-                );
-    }
-
     public long count() {
         return journalRepository.count();
     }

@@ -1,5 +1,7 @@
 package com.project.app.api.dto;
 
 
-public record SearchTokenDto(String searchText, String whereCondition, String orderByCondition, int pageIndex, int pageSize, boolean isDescSort) {
+import java.util.List;
+
+public record SearchTokenDto(List<String> whereArguments, String orderByArgument, int pageIndex, int pageSize, boolean isDescSort) {
 }

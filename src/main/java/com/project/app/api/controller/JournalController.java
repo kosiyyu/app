@@ -7,6 +7,7 @@ import com.project.app.api.dto.SearchTokenDto;
 import com.project.app.api.entity.Journal;
 import com.project.app.api.service.JournalService;
 import com.project.app.api.service.FileMetadataService;
+import com.project.app.api.service.QueryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +23,12 @@ import java.util.NoSuchElementException;
 public class JournalController {
     private final JournalService journalService;
     private final FileMetadataService fileMetadataService;
+    private final QueryService queryService;
 
-    public JournalController(JournalService journalService, FileMetadataService fileMetadataService) {
+    public JournalController(JournalService journalService, FileMetadataService fileMetadataService, QueryService queryService) {
         this.journalService = journalService;
         this.fileMetadataService = fileMetadataService;
+        this.queryService = queryService;
     }
 
     @PostMapping("/journal/upload")
@@ -78,9 +81,15 @@ public class JournalController {
         return ResponseEntity.status(HttpStatus.OK).body(journals);
     }
 
-    @GetMapping("/journals/tokenized/download")
-    public ResponseEntity<?> getQuery(@RequestBody SearchTokenDto searchTokenDto) {
-        CustomSearchDto customSearchDto = journalService.customSearch(searchTokenDto);
+//    @GetMapping("/journals/tokenized/download")
+//    public ResponseEntity<?> getQuery(@RequestBody SearchTokenDto searchTokenDto) {
+//        CustomSearchDto customSearchDto = journalService.customSearch(searchTokenDto);
+//        return ResponseEntity.status(HttpStatus.OK).body(customSearchDto);
+//    }
+
+    @GetMapping("/journals/test/download")
+    public ResponseEntity<?> test(@RequestBody SearchTokenDto searchTokenDto) {
+        CustomSearchDto customSearchDto = queryService.query(searchTokenDto);
         return ResponseEntity.status(HttpStatus.OK).body(customSearchDto);
     }
 
