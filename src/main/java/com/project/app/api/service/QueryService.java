@@ -19,10 +19,17 @@ public class QueryService {
     }
 
     public CustomSearchDto query(SearchTokenDto searchTokenDto){
+        int limit = Math.min(searchTokenDto.pageSize(), 100);
+        int offset = searchTokenDto.pageIndex();
+        boolean isDesc = searchTokenDto.isDescSort();
 
+        if (offset < 0) {
+            return new CustomSearchDto(0, offset, Collections.emptyList());
+        }
+
+        // WHERE CONDITION
         StringBuilder stringBuilder = new StringBuilder();
         List<String> whereArguments = searchTokenDto.whereArguments();
-
         if (!whereArguments.isEmpty()) {
             stringBuilder.append("WHERE ");
             for (int i = 0; i < whereArguments.size(); i++) {
@@ -34,28 +41,23 @@ public class QueryService {
                         .append("OR j.title2 ILIKE '%").append(whereArguments.get(i)).append("%' ");
             }
         }
-
         String whereCondition = stringBuilder.toString();
+        //
+
+        // ORDER BY CONDITION
         String orderByArgument = searchTokenDto.orderByArgument();
-        int limit = Math.min(searchTokenDto.pageSize(), 100);
-        int offset = searchTokenDto.pageIndex();
-        boolean isDesc = searchTokenDto.isDescSort();
-
-        if (offset < 0) {
-            return new CustomSearchDto(0, offset, Collections.emptyList());
-        }
-
-        String orderBySql;
+        String orderByCondition;
         switch(orderByArgument){
-            case "id" -> orderBySql = "order by id " + (isDesc ? "desc " : "asc ");
-            case "title1" -> orderBySql = "order by title1 " + (isDesc ? "desc " : "asc ");
-            case "issn1" -> orderBySql = "order by issn1 " + (isDesc ? "desc " : "asc ");
-            case "eissn1" -> orderBySql = "order by eissn1 " + (isDesc ? "desc " : "asc ");
-            case "title2" -> orderBySql = "order by title2 " + (isDesc ? "desc " : "asc ");
-            case "issn2" -> orderBySql = "order by issn2 " + (isDesc ? "desc " : "asc ");
-            case "eissn2" -> orderBySql = "order by eissn2 " + (isDesc ? "desc " : "asc ");
-            default -> orderBySql = "";
+            case "id" -> orderByCondition = "order by id " + (isDesc ? "desc " : "asc ");
+            case "title1" -> orderByCondition = "order by title1 " + (isDesc ? "desc " : "asc ");
+            case "issn1" -> orderByCondition = "order by issn1 " + (isDesc ? "desc " : "asc ");
+            case "eissn1" -> orderByCondition = "order by eissn1 " + (isDesc ? "desc " : "asc ");
+            case "title2" -> orderByCondition = "order by title2 " + (isDesc ? "desc " : "asc ");
+            case "issn2" -> orderByCondition = "order by issn2 " + (isDesc ? "desc " : "asc ");
+            case "eissn2" -> orderByCondition = "order by eissn2 " + (isDesc ? "desc " : "asc ");
+            default -> orderByCondition = "";
         }
+        //
 
         String sqlCount =
                 "SELECT COUNT(DISTINCT j.id) " +
@@ -66,7 +68,6 @@ public class QueryService {
         Query query = entityManager.createNativeQuery(sqlCount, Long.class);
         long count = (long) query.getSingleResult();
         long numberOfPages = (long)Math.ceil((double)count / limit);
-
         if(offset > numberOfPages || offset < 0) {
             return new CustomSearchDto(numberOfPages, offset, Collections.emptyList());
         }
@@ -77,9 +78,10 @@ public class QueryService {
                 "INNER JOIN journal_tag t_g ON j.id = t_g.journal_id " +
                 "INNER JOIN tag t ON t_g.tag_id = t.id " +
                 whereCondition +
-                orderBySql +
+                orderByCondition +
                 "LIMIT " + limit + " " +
                 "OFFSET " + offset;
+
         List<Journal> journals = entityManager.createNativeQuery(sqlJournals, Journal.class).getResultList();
         return new CustomSearchDto(numberOfPages,searchTokenDto.pageIndex(),journals);
     }
