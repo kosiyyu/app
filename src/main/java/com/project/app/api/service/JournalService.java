@@ -49,8 +49,4 @@ public class JournalService {
         }
         return save(journal);
     }
-
-    public long count() {
-        return journalRepository.count();
-    }
 }

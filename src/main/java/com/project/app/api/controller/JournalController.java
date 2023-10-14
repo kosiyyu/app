@@ -31,22 +31,6 @@ public class JournalController {
         this.queryService = queryService;
     }
 
-    @PostMapping("/journal/upload")
-    public ResponseEntity<?> postJournal(@RequestParam("file") MultipartFile multipartFile, @RequestParam("jsonObject") String json) throws JsonProcessingException {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            Journal journal = objectMapper.readValue(json, Journal.class);
-            if (multipartFile == null) {
-                fileMetadataService.save(multipartFile.getBytes(), multipartFile.getOriginalFilename());
-            }
-            journalService.saveJournalWithUniqueTags(journal);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something goes wrong." + e.getMessage());
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body("Journal created successfully.");
-    }
-
     @GetMapping("/journal/download/{id}")
     public ResponseEntity<?> getJournal(@PathVariable String id) {
         Journal journal;
@@ -63,11 +47,13 @@ public class JournalController {
     }
 
     @PostMapping(value = "/journal/bundle/upload/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> postJournalBundle(@RequestParam("file") MultipartFile multipartFile, @RequestParam("journalJson") String journalJson) throws IOException {
+    public ResponseEntity<?> postJournalBundle(@RequestParam(name = "file", required = false) MultipartFile multipartFile, @RequestParam("journalJson") String journalJson) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             Journal journal = objectMapper.readValue(journalJson, Journal.class);
-            fileMetadataService.save(multipartFile.getBytes(), multipartFile.getOriginalFilename());
+            if(multipartFile != null){
+                fileMetadataService.save(multipartFile.getBytes(), multipartFile.getOriginalFilename());
+            }
             journalService.saveJournalWithUniqueTags(journal);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something goes wrong." + e.getMessage());
@@ -81,22 +67,10 @@ public class JournalController {
         return ResponseEntity.status(HttpStatus.OK).body(journals);
     }
 
-//    @GetMapping("/journals/tokenized/download")
-//    public ResponseEntity<?> getQuery(@RequestBody SearchTokenDto searchTokenDto) {
-//        CustomSearchDto customSearchDto = journalService.customSearch(searchTokenDto);
-//        return ResponseEntity.status(HttpStatus.OK).body(customSearchDto);
-//    }
-
-    @GetMapping("/journals/test/download")
-    public ResponseEntity<?> test(@RequestBody SearchTokenDto searchTokenDto) {
+    @GetMapping("/journals/tokenized/download")
+    public ResponseEntity<?> getJournalsTokenized(@RequestBody SearchTokenDto searchTokenDto) {
         CustomSearchDto customSearchDto = queryService.query(searchTokenDto);
         return ResponseEntity.status(HttpStatus.OK).body(customSearchDto);
-    }
-
-    @GetMapping("/journals/count/download")
-    public ResponseEntity<?> getCount() {
-        long count = journalService.count();
-        return ResponseEntity.status(HttpStatus.OK).body(count);
     }
 }
 
