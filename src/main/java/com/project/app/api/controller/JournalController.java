@@ -67,7 +67,7 @@ public class JournalController {
         return ResponseEntity.status(HttpStatus.OK).body(journals);
     }
 
-    @GetMapping("/journals/tokenized/download")
+    @PostMapping("/journals/tokenized/download")
     public ResponseEntity<?> getJournalsTokenized(@RequestBody SearchTokenDto searchTokenDto) {
         CustomSearchDto customSearchDto = queryService.query(searchTokenDto);
         return ResponseEntity.status(HttpStatus.OK).body(customSearchDto);
