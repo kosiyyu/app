@@ -29,18 +29,34 @@ public class QueryService {
 
         // WHERE CONDITION
         StringBuilder stringBuilder = new StringBuilder();
-        List<String> whereArguments = searchTokenDto.whereArguments();
-        if (!whereArguments.isEmpty()) {
+        List<String> searchStrings = searchTokenDto.searchStrings();
+        List<String> tagStrings = searchTokenDto.tagStrings();
+        if (!searchStrings.isEmpty()) {
             stringBuilder.append("WHERE ");
-            for (int i = 0; i < whereArguments.size(); i++) {
+            for (int i = 0; i < searchStrings.size(); i++) {
                 if (i > 0) {
                     stringBuilder.append(" OR ");
                 }
-                stringBuilder.append(" t.value ILIKE '%").append(whereArguments.get(i)).append("%' ")
-                        .append("OR j.title1 ILIKE '%").append(whereArguments.get(i)).append("%' ")
-                        .append("OR j.title2 ILIKE '%").append(whereArguments.get(i)).append("%' ");
+                stringBuilder.append(" j.title1 ILIKE '%").append(searchStrings.get(i)).append("%' ")
+                        .append("OR j.title2 ILIKE '%").append(searchStrings.get(i)).append("%' ");
             }
         }
+
+        if (!tagStrings.isEmpty()) {
+            if(searchStrings.isEmpty()){
+                stringBuilder.append("WHERE ");
+            }
+            else {
+                stringBuilder.append(" AND ");
+            }
+            for (int i = 0; i < tagStrings.size(); i++) {
+                if (i > 0) {
+                    stringBuilder.append(" AND ");
+                }
+                stringBuilder.append(" t.value = '").append(tagStrings.get(i)).append("' ");
+            }
+        }
+
         String whereCondition = stringBuilder.toString();
         //
 
