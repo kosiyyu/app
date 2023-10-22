@@ -64,13 +64,13 @@ public class QueryService {
         String orderByArgument = searchTokenDto.orderByArgument();
         String orderByCondition;
         switch(orderByArgument){
-            case "id" -> orderByCondition = "order by id " + (isDesc ? "desc " : "asc ");
-            case "title1" -> orderByCondition = "order by title1 " + (isDesc ? "desc " : "asc ");
-            case "issn1" -> orderByCondition = "order by issn1 " + (isDesc ? "desc " : "asc ");
-            case "eissn1" -> orderByCondition = "order by eissn1 " + (isDesc ? "desc " : "asc ");
-            case "title2" -> orderByCondition = "order by title2 " + (isDesc ? "desc " : "asc ");
-            case "issn2" -> orderByCondition = "order by issn2 " + (isDesc ? "desc " : "asc ");
-            case "eissn2" -> orderByCondition = "order by eissn2 " + (isDesc ? "desc " : "asc ");
+            case "Id" -> orderByCondition = "order by id " + (isDesc ? "desc " : "asc ");
+            case "Title 1" -> orderByCondition = "order by title1 " + (isDesc ? "desc " : "asc ");
+            case "Issn 1" -> orderByCondition = "order by issn1 " + (isDesc ? "desc " : "asc ");
+            case "E-issn 1" -> orderByCondition = "order by eissn1 " + (isDesc ? "desc " : "asc ");
+            case "Title 2" -> orderByCondition = "order by title2 " + (isDesc ? "desc " : "asc ");
+            case "Issn 2" -> orderByCondition = "order by issn2 " + (isDesc ? "desc " : "asc ");
+            case "E-issn 2" -> orderByCondition = "order by eissn2 " + (isDesc ? "desc " : "asc ");
             default -> orderByCondition = "";
         }
         //
