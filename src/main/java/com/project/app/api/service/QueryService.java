@@ -64,14 +64,13 @@ public class QueryService {
         String orderByArgument = searchTokenDto.orderByArgument();
         String orderByCondition;
         switch(orderByArgument){
-            case "Id" -> orderByCondition = "order by id " + (isDesc ? "desc " : "asc ");
             case "Title 1" -> orderByCondition = "order by title1 " + (isDesc ? "desc " : "asc ");
             case "Issn 1" -> orderByCondition = "order by issn1 " + (isDesc ? "desc " : "asc ");
             case "E-issn 1" -> orderByCondition = "order by eissn1 " + (isDesc ? "desc " : "asc ");
             case "Title 2" -> orderByCondition = "order by title2 " + (isDesc ? "desc " : "asc ");
             case "Issn 2" -> orderByCondition = "order by issn2 " + (isDesc ? "desc " : "asc ");
             case "E-issn 2" -> orderByCondition = "order by eissn2 " + (isDesc ? "desc " : "asc ");
-            default -> orderByCondition = "";
+            default -> orderByCondition = "order by id " + (isDesc ? "desc " : "asc ");
         }
         //
 
@@ -88,6 +87,7 @@ public class QueryService {
             return new CustomSearchDto(numberOfPages, offset, Collections.emptyList());
         }
 
+        offset *= limit;
         String sqlJournals =
             "SELECT DISTINCT j.id, j.title1, j.issn1, j.eissn1, j.title2, j.issn2, j.eissn2, j.points " +
                 "FROM journal j " +
