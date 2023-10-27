@@ -31,6 +31,8 @@ public class QueryService {
         StringBuilder stringBuilder = new StringBuilder();
         List<String> searchStrings = searchTokenDto.searchStrings();
         List<String> tagStrings = searchTokenDto.tagStrings();
+        boolean isWhereClauseNeeded = true;
+
         if (!searchStrings.isEmpty()) {
             stringBuilder.append("WHERE ");
             for (int i = 0; i < searchStrings.size(); i++) {
@@ -40,10 +42,11 @@ public class QueryService {
                 stringBuilder.append(" j.title1 ILIKE '%").append(searchStrings.get(i)).append("%' ")
                         .append("OR j.title2 ILIKE '%").append(searchStrings.get(i)).append("%' ");
             }
+            isWhereClauseNeeded = false;
         }
 
         if (!tagStrings.isEmpty()) {
-            if(searchStrings.isEmpty()){
+            if(isWhereClauseNeeded){
                 stringBuilder.append("WHERE ");
             }
             else {
@@ -70,6 +73,7 @@ public class QueryService {
             case "Title 2" -> orderByCondition = "order by title2 " + (isDesc ? "desc " : "asc ");
             case "Issn 2" -> orderByCondition = "order by issn2 " + (isDesc ? "desc " : "asc ");
             case "E-issn 2" -> orderByCondition = "order by eissn2 " + (isDesc ? "desc " : "asc ");
+            case "Points" -> orderByCondition = "order by points " + (isDesc ? "desc " : "asc ");
             default -> orderByCondition = "order by id " + (isDesc ? "desc " : "asc ");
         }
         //
@@ -77,8 +81,8 @@ public class QueryService {
         String sqlCount =
                 "SELECT COUNT(DISTINCT j.id) " +
                         "FROM journal j " +
-                        "INNER JOIN journal_tag t_g ON j.id = t_g.journal_id " +
-                        "INNER JOIN tag t ON t_g.tag_id = t.id " +
+                        "LEFT JOIN journal_tag t_g ON j.id = t_g.journal_id " +
+                        "LEFT JOIN tag t ON t_g.tag_id = t.id " +
                         whereCondition;
         Query query = entityManager.createNativeQuery(sqlCount, Long.class);
         long count = (long) query.getSingleResult();
@@ -91,8 +95,8 @@ public class QueryService {
         String sqlJournals =
             "SELECT DISTINCT j.id, j.title1, j.issn1, j.eissn1, j.title2, j.issn2, j.eissn2, j.points " +
                 "FROM journal j " +
-                "INNER JOIN journal_tag t_g ON j.id = t_g.journal_id " +
-                "INNER JOIN tag t ON t_g.tag_id = t.id " +
+                "LEFT JOIN journal_tag t_g ON j.id = t_g.journal_id " +
+                "LEFT JOIN tag t ON t_g.tag_id = t.id " +
                 whereCondition +
                 orderByCondition +
                 "LIMIT " + limit + " " +

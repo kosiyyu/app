@@ -22,8 +22,6 @@ public class CsvController {
         this.csvService = csvService;
     }
 
-
-    //@PostMapping("csv/upload")
     @PostMapping(value = "csv/upload/old", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> postCsvOld(@RequestParam("csv") MultipartFile multipartFile){
         try{
