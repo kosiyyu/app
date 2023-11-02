@@ -88,7 +88,7 @@ public class QueryService {
         long count = (long) query.getSingleResult();
         long numberOfPages = (long)Math.ceil((double)count / limit);
         if(offset > numberOfPages || offset < 0) {
-            return new CustomSearchDto(numberOfPages, offset, Collections.emptyList());
+            return new CustomSearchDto(0, 0, Collections.emptyList());
         }
 
         offset *= limit;
