@@ -22,8 +22,6 @@ public class CsvController {
         this.csvService = csvService;
     }
 
-
-    //@PostMapping("csv/upload")
     @PostMapping(value = "csv/upload/old", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> postCsvOld(@RequestParam("csv") MultipartFile multipartFile){
         try{
@@ -39,10 +37,10 @@ public class CsvController {
         try{
             csvService.extractCsvData(multipartFile.getBytes());
         } catch (UnsupportedMediaTypeStatusException unsupportedMediaTypeStatusException){
-            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("error" + unsupportedMediaTypeStatusException);
+            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("Invalid file sent. Please ensure the file is a csv in requred pattern.");
         } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("error" + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something goes wrong.");
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body("success");
+        return ResponseEntity.status(HttpStatus.CREATED).body("CSV file uploaded correctly.");
     }
 }
