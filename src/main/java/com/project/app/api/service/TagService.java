@@ -52,10 +52,8 @@ public class TagService {
             throw new AlreadyExistsException();
         }
         Tag b = tagRepository.findById(a.getId()).orElseThrow();
-        if(!b.getValue().equals(a.getValue())){
-            b.setValue(a.getValue());
-            tagRepository.save(b);
-        }
+        b.setValue(a.getValue());
+        tagRepository.save(b);
     }
 
     public void delete(int id) throws NoSuchElementException {
