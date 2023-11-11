@@ -5,6 +5,7 @@ import com.project.app.api.dto.SearchTokenDto;
 import com.project.app.api.entity.Journal;
 import com.project.app.api.entity.Tag;
 import com.project.app.api.repository.JournalRepository;
+import com.project.app.tools.AlreadyExistsException;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -49,4 +51,15 @@ public class JournalService {
         }
         return save(journal);
     }
+
+    public void delete(int id) throws NoSuchElementException {
+        journalRepository.findById(id).orElseThrow();
+        journalRepository.deleteById(id);
+    }
+
+    public void patch(Journal journal) throws NoSuchElementException {
+        journalRepository.findById(journal.getId()).orElseThrow();
+        journalRepository.save(journal);
+    }
+
 }
