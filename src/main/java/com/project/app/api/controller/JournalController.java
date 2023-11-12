@@ -74,10 +74,15 @@ public class JournalController {
         return ResponseEntity.status(HttpStatus.OK).body(customSearchDto);
     }
 
-    @PatchMapping("/journals/edit")
-    public ResponseEntity<?> patchJournal(@RequestBody Journal journal){
+    @PatchMapping(value = "/journal/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> patchJournal(@RequestParam(name = "file", required = false) MultipartFile multipartFile, @RequestParam("journalJson") String journalJson){
         try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Journal journal = objectMapper.readValue(journalJson, Journal.class);
             journalService.patch(journal);
+            if(multipartFile != null){
+                //fileMetadataService.save(multipartFile.getBytes(), multipartFile.getOriginalFilename());
+            }
         } catch (NoSuchElementException noSuchElementException){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Journal do not exist.");
         } catch (Exception e){
@@ -86,7 +91,7 @@ public class JournalController {
         return ResponseEntity.status(HttpStatus.OK).body("Journal updated successfully.");
     }
 
-    @DeleteMapping ("/journals/delete/{id}")
+    @DeleteMapping ("/journal/delete/{id}")
     public ResponseEntity<?> deleteJournal(@PathVariable int id){
         try {
             journalService.delete(id);
@@ -95,7 +100,7 @@ public class JournalController {
         } catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something goes wrong.");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        return ResponseEntity.status(HttpStatus.OK).body("Journal deleted successfully.");
     }
 }
 
