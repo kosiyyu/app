@@ -57,7 +57,7 @@ public class JournalController {
             }
             journalService.saveJournalWithUniqueTags(journal);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something goes wrong." + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something goes wrong.");
         }
         return ResponseEntity.status(HttpStatus.OK).body("Journal created successfully.");
     }
