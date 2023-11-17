@@ -1,5 +1,6 @@
 package com.project.app.api.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,23 +14,18 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Metadata {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private int id;
+    @Column(name = "original_filename")
     private String originalFilename;
+    @Column(name = "path")
     private String path;
+    @Column(name = "last_modification")
     private Date lastModification;
-    @ManyToMany(cascade = CascadeType.PERSIST)
-    private List<Tag> tags;
-
-    public Metadata(String originalFilename, String path, List<Tag> tags) {
-        this.originalFilename = originalFilename;
-
-        this.path = path;
-        this.lastModification = new Date();
-        this.tags = tags;
-    }
 
     public Metadata(String originalFilename, String path) {
         this.originalFilename = originalFilename;
