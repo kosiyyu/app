@@ -18,7 +18,7 @@ public class QueryService {
         this.entityManager = entityManager;
     }
 
-    public CustomSearchDto query(SearchTokenDto searchTokenDto){
+    public CustomSearchDto query(SearchTokenDto searchTokenDto) {
         int limit = Math.min(searchTokenDto.pageSize(), 100);
         int offset = searchTokenDto.pageIndex();
         boolean isDesc = searchTokenDto.isDescSort();
@@ -66,7 +66,7 @@ public class QueryService {
         // ORDER BY CONDITION
         String orderByArgument = searchTokenDto.orderByArgument();
         String orderByCondition;
-        switch(orderByArgument){
+        switch(orderByArgument) {
             case "Title 1" -> orderByCondition = "order by title1 " + (isDesc ? "desc " : "asc ");
             case "Issn 1" -> orderByCondition = "order by issn1 " + (isDesc ? "desc " : "asc ");
             case "E-issn 1" -> orderByCondition = "order by eissn1 " + (isDesc ? "desc " : "asc ");
@@ -93,16 +93,18 @@ public class QueryService {
 
         offset *= limit;
         String sqlJournals =
-            "SELECT DISTINCT j.id, j.title1, j.issn1, j.eissn1, j.title2, j.issn2, j.eissn2, j.points " +
+            "SELECT DISTINCT j.id, j.title1, j.issn1, j.eissn1, j.title2, j.issn2, j.eissn2, j.points, j.metadata_id " +
                 "FROM journal j " +
                 "LEFT JOIN journal_tag t_g ON j.id = t_g.journal_id " +
                 "LEFT JOIN tag t ON t_g.tag_id = t.id " +
+                "LEFT JOIN metadata m ON j.metadata_id = m.id " +
                 whereCondition +
                 orderByCondition +
                 "LIMIT " + limit + " " +
                 "OFFSET " + offset;
 
         List<Journal> journals = entityManager.createNativeQuery(sqlJournals, Journal.class).getResultList();
-        return new CustomSearchDto(numberOfPages,searchTokenDto.pageIndex(),journals);
+        CustomSearchDto customSearchDto = new CustomSearchDto(numberOfPages,searchTokenDto.pageIndex(),journals);
+        return customSearchDto;
     }
 }
