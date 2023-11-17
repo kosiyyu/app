@@ -1,21 +1,19 @@
 package com.project.app.api.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.app.api.dto.CustomSearchDto;
 import com.project.app.api.dto.SearchTokenDto;
 import com.project.app.api.entity.Journal;
+import com.project.app.api.entity.Metadata;
 import com.project.app.api.service.JournalService;
 import com.project.app.api.service.FileMetadataService;
 import com.project.app.api.service.QueryService;
-import com.project.app.tools.AlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -53,7 +51,8 @@ public class JournalController {
             ObjectMapper objectMapper = new ObjectMapper();
             Journal journal = objectMapper.readValue(journalJson, Journal.class);
             if(multipartFile != null){
-                fileMetadataService.save(multipartFile.getBytes(), multipartFile.getOriginalFilename());
+                Metadata metadata = fileMetadataService.save(multipartFile.getBytes(), multipartFile.getOriginalFilename());
+                journal.setMetadata(metadata);
             }
             journalService.saveJournalWithUniqueTags(journal);
         } catch (Exception e) {
@@ -70,31 +69,53 @@ public class JournalController {
 
     @PostMapping("/journals/tokenized/download")
     public ResponseEntity<?> getJournalsTokenized(@RequestBody SearchTokenDto searchTokenDto) {
-        CustomSearchDto customSearchDto = queryService.query(searchTokenDto);
+        CustomSearchDto customSearchDto;
+        try {
+            customSearchDto = queryService.query(searchTokenDto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something goes wrong.");
+        }
         return ResponseEntity.status(HttpStatus.OK).body(customSearchDto);
     }
 
     @PatchMapping(value = "/journal/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> patchJournal(@RequestParam(name = "file", required = false) MultipartFile multipartFile, @RequestParam("journalJson") String journalJson){
+        Journal journal;
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            Journal journal = objectMapper.readValue(journalJson, Journal.class);
-            journalService.patch(journal);
+            journal = objectMapper.readValue(journalJson, Journal.class);
+            // update metadata
             if(multipartFile != null){
-                //fileMetadataService.save(multipartFile.getBytes(), multipartFile.getOriginalFilename());
+                if(journal.getMetadata() != null){
+                    // edit current file (delete old file, and create new one)
+                    Metadata metadata = fileMetadataService.update(journal.getMetadata() ,multipartFile.getBytes(), multipartFile.getOriginalFilename());
+                    journal.setMetadata(metadata);
+                }
+                else {
+                    // add new file
+                    Metadata metadata = fileMetadataService.save(multipartFile.getBytes(), multipartFile.getOriginalFilename());
+                    journal.setMetadata(metadata);
+                }
             }
+            journalService.patch(journal);
         } catch (NoSuchElementException noSuchElementException){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Journal do not exist.");
         } catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something goes wrong.");
         }
-        return ResponseEntity.status(HttpStatus.OK).body("Journal updated successfully.");
+        return ResponseEntity.status(HttpStatus.OK).body(journal);
     }
 
-    @DeleteMapping ("/journal/delete/{id}")
-    public ResponseEntity<?> deleteJournal(@PathVariable int id){
+    @DeleteMapping ("/journal/delete/{journalId}")
+    public ResponseEntity<?> deleteJournal(@PathVariable int journalId){
         try {
-            journalService.delete(id);
+            int metadataId = 0;
+            if(journalService.getMetadataId(journalId).isPresent()){
+                metadataId = journalService.getMetadataId(journalId).get();
+            }
+            fileMetadataService.deleteFile(metadataId);
+            journalService.delete(journalId);
         } catch (NoSuchElementException noSuchElementException){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Journal do not exist.");
         } catch (Exception e){
