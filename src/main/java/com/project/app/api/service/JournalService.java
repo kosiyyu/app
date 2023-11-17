@@ -3,6 +3,7 @@ package com.project.app.api.service;
 import com.project.app.api.dto.CustomSearchDto;
 import com.project.app.api.dto.SearchTokenDto;
 import com.project.app.api.entity.Journal;
+import com.project.app.api.entity.Metadata;
 import com.project.app.api.entity.Tag;
 import com.project.app.api.repository.JournalRepository;
 import com.project.app.tools.AlreadyExistsException;
@@ -54,12 +55,21 @@ public class JournalService {
 
     public void delete(int id) throws NoSuchElementException {
         journalRepository.findById(id).orElseThrow();
+        // delete file
         journalRepository.deleteById(id);
+
     }
 
     public void patch(Journal journal) throws NoSuchElementException {
         journalRepository.findById(journal.getId()).orElseThrow();
         journalRepository.save(journal);
+    }
+
+    public Optional<Integer> getMetadataId(int journalId) throws NoSuchElementException{
+        Journal journal = journalRepository.findById(journalId).orElseThrow();
+        return Optional.ofNullable(journal.getMetadata())
+                .map(Metadata::getId)
+                .filter(x -> x > 0);
     }
 
 }
