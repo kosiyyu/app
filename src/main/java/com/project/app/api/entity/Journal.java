@@ -1,5 +1,6 @@
 package com.project.app.api.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,24 +20,25 @@ public class Journal {
     private Integer id;
     @Column(name = "title1")
     private String title1;
-    @Column(name = "issn1")
+    @Column(name = "issn1", unique = true)
     private String issn1;
-    @Column(name = "eissn1")
+    @Column(name = "eissn1", unique = true)
     private String eissn1;
     @Column(name = "title2")
     private String title2;
-    @Column(name = "issn2")
+    @Column(name = "issn2", unique = true)
     private String issn2;
-    @Column(name = "eissn2")
+    @Column(name = "eissn2", unique = true)
     private String eissn2;
 
     @Column(name = "points")
     private Integer points;
-    @ManyToMany(cascade = {
-            CascadeType.PERSIST, CascadeType.MERGE
-    }, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(name = "journal_tag", joinColumns = @JoinColumn(name = "journal_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private List<Tag> tags;
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "metadata_id")
+    private Metadata metadata;
 
     public Journal(String title1, String issn1, String eissn1, String title2, String issn2, String eissn2, Integer points) {
         this.title1 = title1;
