@@ -20,15 +20,15 @@ public class Journal {
     private Integer id;
     @Column(name = "title1")
     private String title1;
-    @Column(name = "issn1", unique = true)
+    @Column(name = "issn1")
     private String issn1;
-    @Column(name = "eissn1", unique = true)
+    @Column(name = "eissn1")
     private String eissn1;
     @Column(name = "title2")
     private String title2;
-    @Column(name = "issn2", unique = true)
+    @Column(name = "issn2")
     private String issn2;
-    @Column(name = "eissn2", unique = true)
+    @Column(name = "eissn2")
     private String eissn2;
 
     @Column(name = "points")
