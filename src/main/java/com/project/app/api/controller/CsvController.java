@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.UnsupportedMediaTypeStatusException;
 
-import java.io.IOException;
-
 @RestController
 @RequestMapping("${API_V1}")
 public class CsvController {
@@ -22,20 +20,10 @@ public class CsvController {
         this.csvService = csvService;
     }
 
-    @PostMapping(value = "csv/upload/old", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> postCsvOld(@RequestParam("csv") MultipartFile multipartFile){
-        try{
-            csvService.loadCsv(multipartFile.getBytes());
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("error" + e);
-        }
-        return ResponseEntity.status(HttpStatus.CREATED).body("success");
-    }
-
     @PostMapping(value = "csv/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> postCsv(@RequestParam("csv") MultipartFile multipartFile) {
         try{
-            csvService.extractCsvData(multipartFile.getBytes());
+            csvService.loadCsv(multipartFile.getBytes());
         } catch (UnsupportedMediaTypeStatusException unsupportedMediaTypeStatusException){
             return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("Invalid file sent. Please ensure the file is a csv in requred pattern.");
         } catch (Exception e){
