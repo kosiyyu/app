@@ -72,4 +72,23 @@ public class JournalService {
                 .filter(x -> x > 0);
     }
 
+    public void saveAll(List<Journal> journals){
+        journalRepository.saveAll(journals);
+    }
+
+    public List<Journal> saveAllJournalsWithUniqueTags(List<Journal> journals) {
+        for (Journal journal : journals) {
+            for (int i = 0; i < journal.getTags().size(); i++) {
+                Tag tag = journal.getTags().get(i);
+                Optional<Tag> checkTag = tagService.getFirstByValue(tag.getValue());
+                if (checkTag.isPresent()) {
+                    journal.getTags().set(i, checkTag.get());
+                } else {
+                    tagService.save(tag);
+                }
+            }
+        }
+        return journalRepository.saveAll(journals);
+    }
+
 }
