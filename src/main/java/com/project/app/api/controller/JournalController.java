@@ -73,7 +73,6 @@ public class JournalController {
         try {
             customSearchDto = queryService.query(searchTokenDto);
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something goes wrong.");
         }
         return ResponseEntity.status(HttpStatus.OK).body(customSearchDto);
