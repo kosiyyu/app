@@ -1,5 +1,6 @@
 FILE_PATH: src/main/resources/files/
 API_V1: /api/v1/
+BATCH_SIZE: 1000
 
 server:
   port: 8081
@@ -15,6 +16,8 @@ spring:
       hibernate:
         #        dialect: org.hibernate.dialect.PostgresSQLDialect
         ddl-auto: create-drop
+        jdbc:
+          batch_size: 1000
     generate-ddl: true
   servlet:
     multipart:
