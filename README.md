@@ -1,11 +1,39 @@
+`WORK IN PROGRES ;))`
+# ✨SciJourDex✨
+> Science Journal Dex
 
-# Docs [for me ;))))]
+> This is a REST API built on a Java-based Spring backend, coupled with PostgreSQL as the database. It is designed for the efficient filtering and management of scientific journals using data from the Polish Ministry of Education [^1]. The API offers file upload capabilities for physical storage, with metadata carefully managed within the database. Additionally, users can manage tags associated with the scientific journals. In the future, a web scraper will be added to include additional tags.
 
-## 1.TO DO
+[^1]: https://www.gov.pl/web/edukacja-i-nauka/nowy-rozszerzony-wykaz-czasopism-naukowych-i-recenzowanych-materialow-z-konferencji-miedzynarodowych
 
-## 2. Database
+## Table of Contents
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [API Documentation](#api-documentation)
 
-### 2.1 Docker
+## Requirements 
+
+`TODO ;))`
+
+## Installation
+```
+docker pull ...
+```
+
+`TODO ;))`
+
+## Configuration
+
+`TODO ;))`
+
+## API Documentation
+
+`TODO ;))`
+
+### FOR ME 
+
+`DONT LOOK HERE ;))`
 
 - Start working with postgres container
 ```
