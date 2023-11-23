@@ -1,5 +1,6 @@
 package com.project.app.api.service;
 
+import com.project.app.api.dto.MultipartDto;
 import com.project.app.api.entity.Metadata;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -55,5 +56,21 @@ public class FileMetadataService {
 
         // DELETE FILE
         fileService.delete(oldFilename);
+    }
+
+    public MultipartDto getMultipartDto(int metadataId) throws IOException {
+
+        Metadata metadata = getMetadata(metadataId);
+
+        String extension = metadata.getOriginalFilename().contains(".") ? metadata.getOriginalFilename().substring(metadata.getOriginalFilename().lastIndexOf(".")) : "";
+        String fullFilename = metadata.getId() + extension;
+
+        byte[] bytes = fileService.get(fullFilename);
+
+        return new MultipartDto(fullFilename, bytes);
+    }
+
+    public Metadata getMetadata(int metadataId) {
+        return metadataService.findById(metadataId).orElseThrow();
     }
 }
