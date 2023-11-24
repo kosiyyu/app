@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @Service
 public class FileService {
@@ -46,6 +48,15 @@ public class FileService {
         try (OutputStream outputStream = new FileOutputStream(newFile)) {
             outputStream.write(newByteArray);
         }
+    }
+
+    public byte[] get(String fullFileName) throws IllegalArgumentException, IOException {
+        String fullPath = Paths.get(filePath, fullFileName).toString();
+        File file = new File(fullPath);
+        if(!file.isFile()){
+            throw new IOException();
+        }
+        return Files.readAllBytes(Paths.get(fullPath));
     }
 
 }

@@ -1,11 +1,11 @@
 package com.project.app.api.service;
 
+import com.project.app.api.dto.FileContentDto;
 import com.project.app.api.entity.Metadata;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -55,5 +55,21 @@ public class FileMetadataService {
 
         // DELETE FILE
         fileService.delete(oldFilename);
+    }
+
+    public FileContentDto getFileContentDto(int metadataId) throws NoSuchElementException, IOException {
+
+        Metadata metadata = getMetadata(metadataId);
+
+        String extension = metadata.getOriginalFilename().contains(".") ? metadata.getOriginalFilename().substring(metadata.getOriginalFilename().lastIndexOf(".")) : "";
+        String fullFilename = metadata.getId() + extension;
+
+        byte[] bytes = fileService.get(fullFilename);
+
+        return new FileContentDto(metadata.getOriginalFilename(), bytes);
+    }
+
+    public Metadata getMetadata(int metadataId) {
+        return metadataService.findById(metadataId).orElseThrow();
     }
 }
