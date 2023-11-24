@@ -50,8 +50,8 @@ public class FileService {
         }
     }
 
-    public byte[] get(String fullFileName) throws IOException {
-        String fullPath = filePath + fullFileName;
+    public byte[] get(String fullFileName) throws IllegalArgumentException, IOException {
+        String fullPath = Paths.get(filePath, fullFileName).toString();
         File file = new File(fullPath);
         if(!file.isFile()){
             throw new IOException();

@@ -1,12 +1,11 @@
 package com.project.app.api.service;
 
-import com.project.app.api.dto.MultipartDto;
+import com.project.app.api.dto.FileContentDto;
 import com.project.app.api.entity.Metadata;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -58,7 +57,7 @@ public class FileMetadataService {
         fileService.delete(oldFilename);
     }
 
-    public MultipartDto getMultipartDto(int metadataId) throws IOException {
+    public FileContentDto getFileContentDto(int metadataId) throws NoSuchElementException, IOException {
 
         Metadata metadata = getMetadata(metadataId);
 
@@ -67,7 +66,7 @@ public class FileMetadataService {
 
         byte[] bytes = fileService.get(fullFilename);
 
-        return new MultipartDto(fullFilename, bytes);
+        return new FileContentDto(metadata.getOriginalFilename(), bytes);
     }
 
     public Metadata getMetadata(int metadataId) {
