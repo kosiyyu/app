@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  scijourdex-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: scijourdex-backend-image
+    container_name: scijourdex-container
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/app
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: Ala_Ma_K0ta
+
+  postgres:
+    image: postgres:15.4
+    container_name: postgres-15.4
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Ala_Ma_K0ta
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
