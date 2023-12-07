@@ -61,12 +61,6 @@ public class JournalController {
         return ResponseEntity.status(HttpStatus.OK).body("Journal created successfully.");
     }
 
-    @GetMapping("/journals/download")
-    public ResponseEntity<?> getJournals() {
-        List<Journal> journals = journalService.getAll();
-        return ResponseEntity.status(HttpStatus.OK).body(journals);
-    }
-
     @PostMapping("/journals/tokenized/download")
     public ResponseEntity<?> getJournalsTokenized(@RequestBody SearchTokenDto searchTokenDto) {
         CustomSearchDto customSearchDto;
@@ -78,7 +72,7 @@ public class JournalController {
         return ResponseEntity.status(HttpStatus.OK).body(customSearchDto);
     }
 
-    @PatchMapping(value = "/journal/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "/journal/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> patchJournal(@RequestParam(name = "file", required = false) MultipartFile multipartFile, @RequestParam("journalJson") String journalJson){
         Journal journal;
         try {
