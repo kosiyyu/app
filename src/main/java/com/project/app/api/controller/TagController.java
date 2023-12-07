@@ -53,7 +53,7 @@ public class TagController {
     }
 
     //
-    @PatchMapping("/tag/edit")
+    @PutMapping("/tag/edit")
     public ResponseEntity<String> patchTag(@RequestBody Tag tag) {
         try{
             tagService.patch(tag);
