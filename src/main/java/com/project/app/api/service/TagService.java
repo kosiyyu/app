@@ -35,16 +35,8 @@ public class TagService {
         return tagRepository.existsByValue(value);
     }
 
-    public Optional<Tag> getByValue(String value) {
-        return tagRepository.findByValue(value);
-    }
-
     public Optional<Tag> getFirstByValue(String value) {
         return tagRepository.findFirstByValue(value);
-    }
-
-    public List<Tag> saveAll(List<Tag> tags){
-        return tagRepository.saveAll(tags);
     }
 
     public void patch(Tag a) throws NoSuchElementException, AlreadyExistsException {

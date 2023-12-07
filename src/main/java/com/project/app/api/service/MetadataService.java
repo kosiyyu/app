@@ -19,26 +19,6 @@ public class MetadataService {
         return this.fileMetadataRepository.save(metaData);
     }
 
-    public List<Metadata> getAll() {
-        return fileMetadataRepository.findAll();
-    }
-
-    public Optional<Metadata> get(int id) {
-        return fileMetadataRepository.findById(id);
-    }
-
-    public void edit(Metadata metaData) {
-        fileMetadataRepository.save(metaData);
-    }
-
-    public List<Metadata> saveList(List<Metadata> metadataList) {
-        return this.fileMetadataRepository.saveAll(metadataList);
-    }
-
-    public List<Metadata> findAll() {
-        return fileMetadataRepository.findAll();
-    }
-
     public Optional<Metadata> findById(int id) {
         return fileMetadataRepository.findById(id);
     }
