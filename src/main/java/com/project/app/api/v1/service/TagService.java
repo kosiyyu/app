@@ -1,10 +1,8 @@
-package com.project.app.api.service;
+package com.project.app.api.v1.service;
 
-import com.project.app.api.entity.Tag;
-import com.project.app.api.repository.TagRepository;
-import com.project.app.tools.AlreadyExistsException;
-import com.sun.nio.sctp.IllegalUnbindException;
-import org.springframework.dao.DataIntegrityViolationException;
+import com.project.app.api.v1.entity.Tag;
+import com.project.app.api.v1.repository.TagRepository;
+import com.project.app.exception.AlreadyExistsException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

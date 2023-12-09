@@ -1,6 +1,5 @@
-package com.project.app.api.service;
+package com.project.app.api.v1.service;
 
-import com.project.app.api.entity.Metadata;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 

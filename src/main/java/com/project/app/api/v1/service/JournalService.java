@@ -1,18 +1,12 @@
-package com.project.app.api.service;
+package com.project.app.api.v1.service;
 
-import com.project.app.api.dto.CustomSearchDto;
-import com.project.app.api.dto.SearchTokenDto;
-import com.project.app.api.entity.Journal;
-import com.project.app.api.entity.Metadata;
-import com.project.app.api.entity.Tag;
-import com.project.app.api.repository.JournalRepository;
-import com.project.app.tools.AlreadyExistsException;
+import com.project.app.api.v1.entity.Journal;
+import com.project.app.api.v1.entity.Metadata;
+import com.project.app.api.v1.entity.Tag;
+import com.project.app.api.v1.repository.JournalRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -33,10 +27,6 @@ public class JournalService {
 
     public Optional<Journal> get(int id) {
         return journalRepository.findById(id);
-    }
-
-    public List<Journal> getAll() {
-        return journalRepository.findAll();
     }
 
     @Transactional
@@ -70,10 +60,6 @@ public class JournalService {
         return Optional.ofNullable(journal.getMetadata())
                 .map(Metadata::getId)
                 .filter(x -> x > 0);
-    }
-
-    public void saveAll(List<Journal> journals){
-        journalRepository.saveAll(journals);
     }
 
     public List<Journal> saveAllJournalsWithUniqueTags(List<Journal> journals) {

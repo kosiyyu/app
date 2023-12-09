@@ -1,8 +1,8 @@
-package com.project.app.api.service;
+package com.project.app.api.v1.service;
 
-import com.project.app.api.dto.CustomSearchDto;
-import com.project.app.api.dto.SearchTokenDto;
-import com.project.app.api.entity.Journal;
+import com.project.app.api.v1.dto.CustomSearchDto;
+import com.project.app.api.v1.dto.SearchTokenDto;
+import com.project.app.api.v1.entity.Journal;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import org.springframework.stereotype.Service;

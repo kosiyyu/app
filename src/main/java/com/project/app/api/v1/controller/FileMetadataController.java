@@ -1,7 +1,7 @@
-package com.project.app.api.controller;
+package com.project.app.api.v1.controller;
 
-import com.project.app.api.dto.FileContentDto;
-import com.project.app.api.service.FileMetadataService;
+import com.project.app.api.v1.dto.FileContentDto;
+import com.project.app.api.v1.service.FileMetadataService;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,11 +17,11 @@ public class FileMetadataController {
         this.fileMetadataService = fileMetadataService;
     }
 
-    @GetMapping(value = "/filemetadata/download/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public ResponseEntity<?> getFileMetadata(@PathVariable int id) {
+    @GetMapping(value = "/filemetadata/download/{fileMetadataId}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<?> getFileMetadata(@PathVariable int fileMetadataId) {
         FileContentDto filePackage;
         try {
-            filePackage = fileMetadataService.getFileContentDto(id);
+            filePackage = fileMetadataService.getFileContentDto(fileMetadataId);
         } catch (NoSuchElementException noSuchElementException) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Metadata not found.");
         } catch (IOException ioException) {
