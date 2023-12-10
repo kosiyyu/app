@@ -23,8 +23,7 @@ public class CsvController {
     @PostMapping(value = "csv/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> postCsv(@RequestParam("csv") MultipartFile multipartFile) {
         try{
-            csvService
-                    .loadCsv(multipartFile.getBytes());
+            csvService.loadCsv(multipartFile.getBytes());
         } catch (UnsupportedMediaTypeStatusException unsupportedMediaTypeStatusException){
             return ResponseEntity
                     .status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)

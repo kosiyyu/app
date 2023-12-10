@@ -20,56 +20,99 @@ public class FileMetadataService {
         this.fileService = fileService;
     }
 
-    public Metadata save(byte[] fileByteArray, String originalFilename) throws IOException {
-        // SAVE METADATA TO DATABASE
+    public Metadata saveFileMetadata(byte[] fileByteArray, String originalFilename) throws IOException {
         Metadata metadata = new Metadata(originalFilename, filesPath);
-        metadata = metadataService.save(metadata);
-        // EXTRACT STRINGS
-        String extension = originalFilename.contains(".") ? originalFilename.substring(originalFilename.lastIndexOf(".")) : "";
+        metadata = metadataService.saveMetadata(metadata);
+
+        String extension =
+                originalFilename
+                        .contains(".")
+                        ?
+                        originalFilename
+                                .substring(originalFilename.lastIndexOf("."))
+                        :
+                        "";
+
         String newFilename = metadata.getId() + extension;
-        // SAVE FILE TO DIRECTORY
-        fileService.save(fileByteArray, newFilename);
+        fileService.saveFile(fileByteArray, newFilename);
+
         return metadata;
     }
 
-    public Metadata update(Metadata metadata, byte[] fileByteArray, String originalFilename) throws NoSuchElementException, IOException {
-        // EXTRACT STRINGS
-        String newExtension = originalFilename.contains(".") ? originalFilename.substring(originalFilename.lastIndexOf(".")) : "";
+    public Metadata updateFileMetadata(Metadata metadata, byte[] fileByteArray, String originalFilename) throws NoSuchElementException, IOException {
+        String newExtension =
+                originalFilename
+                        .contains(".")
+                        ?
+                        originalFilename
+                                .substring(originalFilename.lastIndexOf("."))
+                        :
+                        "";
         String newFilename = metadata.getId() + newExtension;
 
-        String oldExtension = metadata.getOriginalFilename().contains(".") ? metadata.getOriginalFilename().substring(metadata.getOriginalFilename().lastIndexOf(".")) : "";
+        String oldExtension =
+                metadata
+                        .getOriginalFilename()
+                        .contains(".")
+                        ?
+                        metadata
+                                .getOriginalFilename()
+                                .substring(metadata.getOriginalFilename().lastIndexOf("."))
+                        :
+                        "";
+
         String oldFilename = metadata.getId() + oldExtension;
-        // UPDATE FILE TO DIRECTORY
-        fileService.update(oldFilename, fileByteArray, newFilename);
-        // UPDATE METADATA
+        fileService.updateFile(oldFilename, fileByteArray, newFilename);
+
         metadata.setOriginalFilename(originalFilename);
         metadata.setPath(filesPath);
-        return metadataService.save(metadata);
+
+        return metadataService.saveMetadata(metadata);
     }
 
     public void deleteFile(int id) throws NoSuchElementException, IOException {
-        Metadata metadata = metadataService.findById(id).orElseThrow();
+        Metadata metadata = metadataService
+                .getMetadata(id)
+                .orElseThrow();
 
-        String oldExtension = metadata.getOriginalFilename().contains(".") ? metadata.getOriginalFilename().substring(metadata.getOriginalFilename().lastIndexOf(".")) : "";
+        String oldExtension =
+                metadata
+                        .getOriginalFilename()
+                        .contains(".")
+                ?
+                metadata
+                        .getOriginalFilename()
+                        .substring(metadata.getOriginalFilename().lastIndexOf("."))
+                :
+                "";
+
         String oldFilename = metadata.getId() + oldExtension;
-
-        // DELETE FILE
-        fileService.delete(oldFilename);
+        fileService.deleteFile(oldFilename);
     }
 
-    public FileContentDto getFileContentDto(int metadataId) throws NoSuchElementException, IOException {
-
+    public FileContentDto getFile(int metadataId) throws NoSuchElementException, IOException {
         Metadata metadata = getMetadata(metadataId);
 
-        String extension = metadata.getOriginalFilename().contains(".") ? metadata.getOriginalFilename().substring(metadata.getOriginalFilename().lastIndexOf(".")) : "";
-        String fullFilename = metadata.getId() + extension;
+        String extension =
+                metadata
+                        .getOriginalFilename()
+                        .contains(".")
+                        ?
+                        metadata
+                                .getOriginalFilename()
+                                .substring(metadata.getOriginalFilename().lastIndexOf("."))
+                        :
+                        "";
 
-        byte[] bytes = fileService.get(fullFilename);
+        String fullFilename = metadata.getId() + extension;
+        byte[] bytes = fileService.getFile(fullFilename);
 
         return new FileContentDto(metadata.getOriginalFilename(), bytes);
     }
 
     public Metadata getMetadata(int metadataId) {
-        return metadataService.findById(metadataId).orElseThrow();
+        return metadataService
+                .getMetadata(metadataId)
+                .orElseThrow();
     }
 }

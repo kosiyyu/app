@@ -30,18 +30,22 @@ public class JournalController {
     }
 
     @GetMapping("/journal/download/{journalId}")
-    public ResponseEntity<?> getJournal(@PathVariable String journalId) {
+    public ResponseEntity<?> getJournal(@PathVariable int journalId) {
         Journal journal;
         try {
-            journal = journalService.get(Integer.parseInt(journalId)).orElseThrow();
-        } catch (NumberFormatException numberFormatException) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Provided id must be a number.");
+            journal = journalService.getJournal(journalId).orElseThrow();
         } catch (NoSuchElementException noSuchElementException) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Journal does not exists.");
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("Journal does not exists.");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something goes wrong.");
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Something goes wrong.");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(journal);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(journal);
     }
 
     @PostMapping(value = "/journal/bundle/upload/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -50,14 +54,18 @@ public class JournalController {
             ObjectMapper objectMapper = new ObjectMapper();
             Journal journal = objectMapper.readValue(journalJson, Journal.class);
             if(multipartFile != null){
-                Metadata metadata = fileMetadataService.save(multipartFile.getBytes(), multipartFile.getOriginalFilename());
+                Metadata metadata = fileMetadataService.saveFileMetadata(multipartFile.getBytes(), multipartFile.getOriginalFilename());
                 journal.setMetadata(metadata);
             }
             journalService.saveJournalWithUniqueTags(journal);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something goes wrong.");
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Something goes wrong.");
         }
-        return ResponseEntity.status(HttpStatus.OK).body("Journal created successfully.");
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("Journal created successfully.");
     }
 
     @PostMapping("/journals/tokenized/download")
@@ -66,9 +74,13 @@ public class JournalController {
         try {
             customSearchDto = queryService.query(searchTokenDto);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something goes wrong.");
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Something goes wrong.");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(customSearchDto);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(customSearchDto);
     }
 
     @PutMapping(value = "/journal/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -81,22 +93,28 @@ public class JournalController {
             if(multipartFile != null){
                 if(journal.getMetadata() != null){
                     // edit current file (delete old file, and create new one)
-                    Metadata metadata = fileMetadataService.update(journal.getMetadata() ,multipartFile.getBytes(), multipartFile.getOriginalFilename());
+                    Metadata metadata = fileMetadataService.updateFileMetadata(journal.getMetadata() ,multipartFile.getBytes(), multipartFile.getOriginalFilename());
                     journal.setMetadata(metadata);
                 }
                 else {
                     // add new file
-                    Metadata metadata = fileMetadataService.save(multipartFile.getBytes(), multipartFile.getOriginalFilename());
+                    Metadata metadata = fileMetadataService.saveFileMetadata(multipartFile.getBytes(), multipartFile.getOriginalFilename());
                     journal.setMetadata(metadata);
                 }
             }
-            journalService.patch(journal);
+            journalService.editJournal(journal);
         } catch (NoSuchElementException noSuchElementException){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Journal do not exist.");
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("Journal do not exist.");
         } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something goes wrong.");
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Something goes wrong.");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(journal);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(journal);
     }
 
     @DeleteMapping ("/journal/delete/{journalId}")
@@ -104,16 +122,22 @@ public class JournalController {
         try {
             int metadataId = 0;
             if(journalService.getMetadataId(journalId).isPresent()){
-                metadataId = journalService.getMetadataId(journalId).get();
+                metadataId = journalService.getMetadataId(journalId).orElseThrow();
             }
             fileMetadataService.deleteFile(metadataId);
-            journalService.delete(journalId);
+            journalService.deleteJournal(journalId);
         } catch (NoSuchElementException noSuchElementException){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Journal do not exist.");
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("Journal do not exist.");
         } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something goes wrong.");
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Something goes wrong.");
         }
-        return ResponseEntity.status(HttpStatus.OK).body("Journal deleted successfully.");
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("Journal deleted successfully.");
     }
 }
 

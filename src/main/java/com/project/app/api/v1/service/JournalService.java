@@ -21,36 +21,34 @@ public class JournalService {
         this.tagService = tagService;
     }
 
-    public Journal save(Journal journal) {
+    public Journal saveJournal(Journal journal) {
         return journalRepository.save(journal);
     }
 
-    public Optional<Journal> get(int id) {
-        return journalRepository.findById(id);
+    public Optional<Journal> getJournal(int journalId) {
+        return journalRepository.findById(journalId);
     }
 
     @Transactional
-    public Journal saveJournalWithUniqueTags(Journal journal) {
+    public void saveJournalWithUniqueTags(Journal journal) {
         for (int i = 0; i < journal.getTags().size(); i++) {
             Tag tag = journal.getTags().get(i);
-            Optional<Tag> checkTag = tagService.getFirstByValue(tag.getValue());
+            Optional<Tag> checkTag = tagService.getFirstTagByValue(tag.getValue());
             if (checkTag.isPresent()) {
                 journal.getTags().set(i, checkTag.get());
             } else {
-                tagService.save(tag);
+                tagService.saveTag(tag);
             }
         }
-        return save(journal);
+        saveJournal(journal);
     }
 
-    public void delete(int id) throws NoSuchElementException {
-        journalRepository.findById(id).orElseThrow();
-        // delete file
-        journalRepository.deleteById(id);
-
+    public void deleteJournal(int journalId) throws NoSuchElementException {
+        journalRepository.findById(journalId).orElseThrow();
+        journalRepository.deleteById(journalId);
     }
 
-    public void patch(Journal journal) throws NoSuchElementException {
+    public void editJournal(Journal journal) throws NoSuchElementException {
         journalRepository.findById(journal.getId()).orElseThrow();
         journalRepository.save(journal);
     }
@@ -62,19 +60,18 @@ public class JournalService {
                 .filter(x -> x > 0);
     }
 
-    public List<Journal> saveAllJournalsWithUniqueTags(List<Journal> journals) {
+    public void saveAllJournalsWithUniqueTags(List<Journal> journals) {
         for (Journal journal : journals) {
             for (int i = 0; i < journal.getTags().size(); i++) {
                 Tag tag = journal.getTags().get(i);
-                Optional<Tag> checkTag = tagService.getFirstByValue(tag.getValue());
+                Optional<Tag> checkTag = tagService.getFirstTagByValue(tag.getValue());
                 if (checkTag.isPresent()) {
                     journal.getTags().set(i, checkTag.get());
                 } else {
-                    tagService.save(tag);
+                    tagService.saveTag(tag);
                 }
             }
         }
-        return journalRepository.saveAll(journals);
+        journalRepository.saveAll(journals);
     }
-
 }

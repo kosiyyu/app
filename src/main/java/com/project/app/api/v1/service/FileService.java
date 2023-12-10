@@ -15,7 +15,7 @@ public class FileService {
     @Value("${FILE_PATH}")
     private String filePath;
 
-    public void save(byte[] byteArray, String newFilename) throws IOException {
+    public void saveFile(byte[] byteArray, String newFilename) throws IOException {
         String path = filePath + newFilename;
         OutputStream file = new FileOutputStream(path);
         file.write(byteArray);
@@ -23,7 +23,7 @@ public class FileService {
         file.close();
     }
 
-    public void delete(String oldFilename) throws IOException {
+    public void deleteFile(String oldFilename) throws IOException {
         String path = filePath + oldFilename;
         File file = new File(path);
         if(file.isFile()) {
@@ -33,7 +33,7 @@ public class FileService {
         }
     }
 
-    public void update(String oldFilename, byte[] newByteArray, String newFilename) throws IOException {
+    public void updateFile(String oldFilename, byte[] newByteArray, String newFilename) throws IOException {
         String path = filePath + oldFilename;
         File oldFile = new File(path);
         if(oldFile.isFile()){
@@ -49,7 +49,7 @@ public class FileService {
         }
     }
 
-    public byte[] get(String fullFileName) throws IllegalArgumentException, IOException {
+    public byte[] getFile(String fullFileName) throws IllegalArgumentException, IOException {
         String fullPath = Paths.get(filePath, fullFileName).toString();
         File file = new File(fullPath);
         if(!file.isFile()){
