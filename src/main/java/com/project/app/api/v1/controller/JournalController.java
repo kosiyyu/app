@@ -1,20 +1,19 @@
-package com.project.app.api.controller;
+package com.project.app.api.v1.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.app.api.dto.CustomSearchDto;
-import com.project.app.api.dto.SearchTokenDto;
-import com.project.app.api.entity.Journal;
-import com.project.app.api.entity.Metadata;
-import com.project.app.api.service.JournalService;
-import com.project.app.api.service.FileMetadataService;
-import com.project.app.api.service.QueryService;
+import com.project.app.api.v1.dto.CustomSearchDto;
+import com.project.app.api.v1.dto.SearchTokenDto;
+import com.project.app.api.v1.entity.Journal;
+import com.project.app.api.v1.entity.Metadata;
+import com.project.app.api.v1.service.JournalService;
+import com.project.app.api.v1.service.FileMetadataService;
+import com.project.app.api.v1.service.QueryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -30,11 +29,11 @@ public class JournalController {
         this.queryService = queryService;
     }
 
-    @GetMapping("/journal/download/{id}")
-    public ResponseEntity<?> getJournal(@PathVariable String id) {
+    @GetMapping("/journal/download/{journalId}")
+    public ResponseEntity<?> getJournal(@PathVariable String journalId) {
         Journal journal;
         try {
-            journal = journalService.get(Integer.parseInt(id)).orElseThrow();
+            journal = journalService.get(Integer.parseInt(journalId)).orElseThrow();
         } catch (NumberFormatException numberFormatException) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Provided id must be a number.");
         } catch (NoSuchElementException noSuchElementException) {

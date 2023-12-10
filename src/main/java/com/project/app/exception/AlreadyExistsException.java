@@ -1,4 +1,4 @@
-package com.project.app.tools;
+package com.project.app.exception;
 
 public class AlreadyExistsException extends Exception{
     public AlreadyExistsException(String msg){

@@ -1,4 +1,4 @@
-package com.project.app.api.entity;
+package com.project.app.api.v1.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

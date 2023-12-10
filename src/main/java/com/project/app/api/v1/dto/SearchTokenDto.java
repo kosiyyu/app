@@ -1,4 +1,4 @@
-package com.project.app.api.dto;
+package com.project.app.api.v1.dto;
 
 
 import java.util.List;

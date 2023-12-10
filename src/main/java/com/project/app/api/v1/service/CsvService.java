@@ -1,7 +1,7 @@
-package com.project.app.api.service;
+package com.project.app.api.v1.service;
 
-import com.project.app.api.entity.Journal;
-import com.project.app.api.entity.Tag;
+import com.project.app.api.v1.entity.Journal;
+import com.project.app.api.v1.entity.Tag;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 

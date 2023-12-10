@@ -1,14 +1,13 @@
-package com.project.app.api.controller;
+package com.project.app.api.v1.controller;
 
-import com.project.app.api.entity.Tag;
-import com.project.app.api.service.TagService;
-import com.project.app.tools.AlreadyExistsException;
+import com.project.app.api.v1.entity.Tag;
+import com.project.app.api.v1.service.TagService;
+import com.project.app.exception.AlreadyExistsException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -26,13 +25,11 @@ public class TagController {
         return ResponseEntity.status(HttpStatus.OK).body(tags);
     }
 
-    @GetMapping("/tag/download/{id}")
-    public ResponseEntity<?> get(@PathVariable String id) {
+    @GetMapping("/tag/download/{tagId}")
+    public ResponseEntity<?> get(@PathVariable int tagId) {
         Tag tag;
         try {
-            tag = tagService.get(Integer.valueOf(id)).orElseThrow();
-        } catch (NumberFormatException numberFormatException) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Provided id must be a number.");
+            tag = tagService.get(tagId).orElseThrow();
         } catch (NoSuchElementException noSuchElementException) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Provided tag does not exists.");
         }
@@ -68,10 +65,10 @@ public class TagController {
     }
 
     //
-    @DeleteMapping("/tag/delete/{id}")
-    public ResponseEntity<String> deleteTag(@PathVariable int id) {
+    @DeleteMapping("/tag/delete/{tagId}")
+    public ResponseEntity<String> deleteTag(@PathVariable int tagId) {
         try{
-            tagService.delete(id);
+            tagService.delete(tagId);
         } catch (NoSuchElementException noSuchElementException){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Tag do not exist.");
         } catch (DataIntegrityViolationException dataIntegrityViolationException){

@@ -1,7 +1,7 @@
-package com.project.app.api.service;
+package com.project.app.api.v1.service;
 
-import com.project.app.api.dto.FileContentDto;
-import com.project.app.api.entity.Metadata;
+import com.project.app.api.v1.dto.FileContentDto;
+import com.project.app.api.v1.entity.Metadata;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
