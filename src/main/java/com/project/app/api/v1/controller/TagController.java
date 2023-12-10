@@ -20,62 +20,87 @@ public class TagController {
         this.tagService = tagService;
     }
     @GetMapping("/tags/download")
-    public ResponseEntity<List<Tag>> getAllTags() {
-        List<Tag> tags = tagService.getAll();
-        return ResponseEntity.status(HttpStatus.OK).body(tags);
+    public ResponseEntity<List<Tag>> getTags() {
+        List<Tag> tags = tagService.getTags();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(tags);
     }
 
     @GetMapping("/tag/download/{tagId}")
-    public ResponseEntity<?> get(@PathVariable int tagId) {
+    public ResponseEntity<?> getTag(@PathVariable int tagId) {
         Tag tag;
         try {
-            tag = tagService.get(tagId).orElseThrow();
+            tag = tagService.getTag(tagId).orElseThrow();
         } catch (NoSuchElementException noSuchElementException) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Provided tag does not exists.");
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Provided tag does not exists.");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(tag);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(tag);
     }
 
-    //
     @PostMapping("/tag/upload")
     public ResponseEntity<String> postTag(@RequestBody Tag tag) {
         try{
-            tagService.saveSafe(tag);
+            tagService.safeSaveTag(tag);
         } catch (AlreadyExistsException e){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Tag already exists.");
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("Tag already exists.");
         } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something goes wrong.");
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Something goes wrong.");
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body("Tag created successfully.");
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body("Tag created successfully.");
     }
 
-    //
     @PutMapping("/tag/edit")
-    public ResponseEntity<String> patchTag(@RequestBody Tag tag) {
+    public ResponseEntity<String> putTag(@RequestBody Tag tag) {
         try{
-            tagService.patch(tag);
+            tagService.editTag(tag);
         } catch (AlreadyExistsException alreadyExistsException){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Tag already exists.");
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("Tag already exists.");
         } catch (NoSuchElementException noSuchElementException){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Tag do not exist.");
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("Tag do not exist.");
         } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something goes wrong.");
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Something goes wrong.");
         }
-        return ResponseEntity.status(HttpStatus.OK).body("Tag updated successfully.");
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("Tag updated successfully.");
     }
 
-    //
     @DeleteMapping("/tag/delete/{tagId}")
     public ResponseEntity<String> deleteTag(@PathVariable int tagId) {
         try{
-            tagService.delete(tagId);
-        } catch (NoSuchElementException noSuchElementException){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Tag do not exist.");
-        } catch (DataIntegrityViolationException dataIntegrityViolationException){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Tag is being used somewhere else.");
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something goes wrong.");
+            tagService.deleteTag(tagId);
+        } catch (NoSuchElementException noSuchElementException) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("Tag do not exist.");
+        } catch (DataIntegrityViolationException dataIntegrityViolationException) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("Tag is being used somewhere else.");
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Something goes wrong.");
         }
-        return ResponseEntity.status(HttpStatus.OK).body("Tag deleted successfully.");
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("Tag deleted successfully.");
     }
 }

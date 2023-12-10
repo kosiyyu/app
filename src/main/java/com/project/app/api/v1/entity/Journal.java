@@ -29,7 +29,6 @@ public class Journal {
     private String issn2;
     @Column(name = "eissn2")
     private String eissn2;
-
     @Column(name = "points")
     private Integer points;
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)

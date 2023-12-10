@@ -14,11 +14,11 @@ public class MetadataService {
         this.metadataRepository = metadataRepository;
     }
 
-    public Metadata save(Metadata metadata) {
+    public Metadata saveMetadata(Metadata metadata) {
         return this.metadataRepository.save(metadata);
     }
 
-    public Optional<Metadata> findById(int id) {
-        return metadataRepository.findById(id);
+    public Optional<Metadata> getMetadata(int metadataId) {
+        return metadataRepository.findById(metadataId);
     }
 }

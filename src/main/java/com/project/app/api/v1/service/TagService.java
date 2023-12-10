@@ -17,27 +17,27 @@ public class TagService {
         this.tagRepository = tagRepository;
     }
 
-    public Tag save(Tag tag) {
-        return tagRepository.save(tag);
+    public void saveTag(Tag tag) {
+        tagRepository.save(tag);
     }
 
-    public List<Tag> getAll() {
+    public List<Tag> getTags() {
         return tagRepository.findAll();
     }
 
-    public Optional<Tag> get(int id) {
-        return tagRepository.findById(id);
+    public Optional<Tag> getTag(int tagId) {
+        return tagRepository.findById(tagId);
     }
 
-    public boolean contains(String value) {
+    private boolean contains(String value) {
         return tagRepository.existsByValue(value);
     }
 
-    public Optional<Tag> getFirstByValue(String value) {
+    public Optional<Tag> getFirstTagByValue(String value) {
         return tagRepository.findFirstByValue(value);
     }
 
-    public void patch(Tag a) throws NoSuchElementException, AlreadyExistsException {
+    public void editTag(Tag a) throws NoSuchElementException, AlreadyExistsException {
         if(contains(a.getValue())){
             throw new AlreadyExistsException();
         }
@@ -46,12 +46,12 @@ public class TagService {
         tagRepository.save(b);
     }
 
-    public void delete(int id) throws NoSuchElementException {
-        tagRepository.findById(id).orElseThrow();
-        tagRepository.deleteById(id);
+    public void deleteTag(int tagId) throws NoSuchElementException {
+        tagRepository.findById(tagId).orElseThrow();
+        tagRepository.deleteById(tagId);
     }
 
-    public void saveSafe(Tag tag) throws IllegalArgumentException, AlreadyExistsException {
+    public void safeSaveTag(Tag tag) throws IllegalArgumentException, AlreadyExistsException {
         if(tag.getId() != 0){
             throw new IllegalArgumentException();
         }

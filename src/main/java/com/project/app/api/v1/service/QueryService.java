@@ -18,19 +18,24 @@ public class QueryService {
         this.entityManager = entityManager;
     }
 
-    public CustomSearchDto query(SearchTokenDto searchTokenDto) {
-        int limit = Math.min(searchTokenDto.pageSize(), 100);
-        int offset = searchTokenDto.pageIndex();
-        boolean isDesc = searchTokenDto.isDescSort();
-
-        if (offset < 0) {
-            return new CustomSearchDto(0, offset, Collections.emptyList());
+    private String orderByCondition(String orderByArgument, boolean isDesc){
+        String condition;
+        switch(orderByArgument) {
+            case "Title 1" -> condition = "order by title1 " + (isDesc ? "desc " : "asc ");
+            case "Issn 1" -> condition = "order by issn1 " + (isDesc ? "desc " : "asc ");
+            case "E-issn 1" -> condition = "order by eissn1 " + (isDesc ? "desc " : "asc ");
+            case "Title 2" -> condition = "order by title2 " + (isDesc ? "desc " : "asc ");
+            case "Issn 2" -> condition = "order by issn2 " + (isDesc ? "desc " : "asc ");
+            case "E-issn 2" -> condition = "order by eissn2 " + (isDesc ? "desc " : "asc ");
+            case "Points" -> condition = "order by points " + (isDesc ? "desc " : "asc ");
+            default -> condition = "order by id " + (isDesc ? "desc " : "asc ");
         }
+        return condition;
+    }
 
-        // WHERE CONDITION
+    private String whereCondition(List<String> searchStrings, List<String> tagStrings){
         StringBuilder stringBuilder = new StringBuilder();
-        List<String> searchStrings = searchTokenDto.searchStrings();
-        List<String> tagStrings = searchTokenDto.tagStrings();
+
         boolean isWhereClauseNeeded = true;
 
         if (!searchStrings.isEmpty()) {
@@ -59,52 +64,55 @@ public class QueryService {
                 stringBuilder.append(" t.value = '").append(tagStrings.get(i)).append("' ");
             }
         }
+        return stringBuilder.toString();
+    }
 
-        String whereCondition = stringBuilder.toString();
-        //
-
-        // ORDER BY CONDITION
-        String orderByArgument = searchTokenDto.orderByArgument();
-        String orderByCondition;
-        switch(orderByArgument) {
-            case "Title 1" -> orderByCondition = "order by title1 " + (isDesc ? "desc " : "asc ");
-            case "Issn 1" -> orderByCondition = "order by issn1 " + (isDesc ? "desc " : "asc ");
-            case "E-issn 1" -> orderByCondition = "order by eissn1 " + (isDesc ? "desc " : "asc ");
-            case "Title 2" -> orderByCondition = "order by title2 " + (isDesc ? "desc " : "asc ");
-            case "Issn 2" -> orderByCondition = "order by issn2 " + (isDesc ? "desc " : "asc ");
-            case "E-issn 2" -> orderByCondition = "order by eissn2 " + (isDesc ? "desc " : "asc ");
-            case "Points" -> orderByCondition = "order by points " + (isDesc ? "desc " : "asc ");
-            default -> orderByCondition = "order by id " + (isDesc ? "desc " : "asc ");
-        }
-        //
-
-        String sqlCount =
+    private long getCount(String whereCondition){
+        String countQuery =
                 "SELECT COUNT(DISTINCT j.id) " +
                         "FROM journal j " +
                         "LEFT JOIN journal_tag t_g ON j.id = t_g.journal_id " +
                         "LEFT JOIN tag t ON t_g.tag_id = t.id " +
                         whereCondition;
-        Query query = entityManager.createNativeQuery(sqlCount, Long.class);
-        long count = (long) query.getSingleResult();
-        long numberOfPages = (long)Math.ceil((double)count / limit);
+        Query query = entityManager.createNativeQuery(countQuery, Long.class);
+        return (long) query.getSingleResult();
+    }
+
+    private List<Journal> getArticles(String whereCondition, String orderByCondition, int limit, int offset){
+        String mainQuery =
+                "SELECT DISTINCT j.id, j.title1, j.issn1, j.eissn1, j.title2, j.issn2, j.eissn2, j.points, j.metadata_id " +
+                        "FROM journal j " +
+                        "LEFT JOIN journal_tag t_g ON j.id = t_g.journal_id " +
+                        "LEFT JOIN tag t ON t_g.tag_id = t.id " +
+                        "LEFT JOIN metadata m ON j.metadata_id = m.id " +
+                        whereCondition +
+                        orderByCondition +
+                        "LIMIT " + limit + " " +
+                        "OFFSET " + offset;
+
+        return entityManager.createNativeQuery(mainQuery, Journal.class).getResultList();
+    }
+
+
+    public CustomSearchDto query(SearchTokenDto searchTokenDto) {
+        int limit = Math.min(searchTokenDto.pageSize(), 100);
+        int offset = searchTokenDto.pageIndex();
+        if (offset < 0) {
+            return new CustomSearchDto(0, offset, Collections.emptyList());
+        }
+
+        String whereCondition = whereCondition(searchTokenDto.searchStrings(), searchTokenDto.tagStrings());
+        String orderByCondition = orderByCondition(searchTokenDto.orderByArgument(), searchTokenDto.isDescSort());
+
+        long count = getCount(whereCondition);
+        long numberOfPages = (long) Math.ceil((double) count / limit);
         if(offset > numberOfPages || offset < 0) {
             return new CustomSearchDto(0, 0, Collections.emptyList());
         }
 
         offset *= limit;
-        String sqlJournals =
-            "SELECT DISTINCT j.id, j.title1, j.issn1, j.eissn1, j.title2, j.issn2, j.eissn2, j.points, j.metadata_id " +
-                "FROM journal j " +
-                "LEFT JOIN journal_tag t_g ON j.id = t_g.journal_id " +
-                "LEFT JOIN tag t ON t_g.tag_id = t.id " +
-                "LEFT JOIN metadata m ON j.metadata_id = m.id " +
-                whereCondition +
-                orderByCondition +
-                "LIMIT " + limit + " " +
-                "OFFSET " + offset;
 
-        List<Journal> journals = entityManager.createNativeQuery(sqlJournals, Journal.class).getResultList();
-        CustomSearchDto customSearchDto = new CustomSearchDto(numberOfPages,searchTokenDto.pageIndex(),journals);
-        return customSearchDto;
+        List<Journal> journals = getArticles(whereCondition, orderByCondition, limit, offset);
+        return new CustomSearchDto(numberOfPages,searchTokenDto.pageIndex(),journals);
     }
 }
