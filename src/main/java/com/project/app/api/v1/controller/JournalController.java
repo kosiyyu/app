@@ -72,7 +72,7 @@ public class JournalController {
     }
 
     @PutMapping(value = "/journal/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> patchJournal(@RequestParam(name = "file", required = false) MultipartFile multipartFile, @RequestParam("journalJson") String journalJson){
+    public ResponseEntity<?> putJournal(@RequestParam(name = "file", required = false) MultipartFile multipartFile, @RequestParam("journalJson") String journalJson){
         Journal journal;
         try {
             ObjectMapper objectMapper = new ObjectMapper();
