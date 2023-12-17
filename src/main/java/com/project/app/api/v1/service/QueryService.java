@@ -33,8 +33,10 @@ public class QueryService {
         return condition;
     }
 
-    private String whereCondition(List<String> searchStrings, List<String> tagStrings){
+    private String whereCondition(List<String> searchStrings, List<String> tagStrings, boolean isOr){
         StringBuilder stringBuilder = new StringBuilder();
+
+        String searchStringsOperator = isOr ? "OR" : "AND";
 
         boolean isWhereClauseNeeded = true;
 
@@ -42,10 +44,10 @@ public class QueryService {
             stringBuilder.append("WHERE (");
             for (int i = 0; i < searchStrings.size(); i++) {
                 if (i > 0) {
-                    stringBuilder.append(" OR ");
+                    stringBuilder.append(" " + searchStringsOperator + " ");
                 }
                 stringBuilder.append(" j.title1 ILIKE '%").append(searchStrings.get(i)).append("%' ")
-                        .append("OR j.title2 ILIKE '%").append(searchStrings.get(i)).append("%' ");
+                        .append(searchStringsOperator + " j.title2 ILIKE '%").append(searchStrings.get(i)).append("%' ");
             }
             stringBuilder.append(") ");
             isWhereClauseNeeded = false;
@@ -112,7 +114,7 @@ public class QueryService {
             return new CustomSearchDto(0, offset, Collections.emptyList());
         }
 
-        String whereCondition = whereCondition(searchTokenDto.searchStrings(), searchTokenDto.tagStrings());
+        String whereCondition = whereCondition(searchTokenDto.searchStrings(), searchTokenDto.tagStrings(), searchTokenDto.isOr());
         String orderByCondition = orderByCondition(searchTokenDto.orderByArgument(), searchTokenDto.isDescSort());
 
         long count = getCount(whereCondition);
