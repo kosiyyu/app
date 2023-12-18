@@ -44,12 +44,20 @@ public class QueryService {
             stringBuilder.append("WHERE (");
             for (int i = 0; i < searchStrings.size(); i++) {
                 if (i > 0) {
-                    stringBuilder.append(" " + searchStringsOperator + " ");
+                    stringBuilder
+                            .append(" ")
+                            .append(searchStringsOperator)
+                            .append(" ");
                 }
-                stringBuilder.append(" j.title1 ILIKE '%").append(searchStrings.get(i)).append("%' ")
-                        .append(searchStringsOperator + " j.title2 ILIKE '%").append(searchStrings.get(i)).append("%' ");
+                stringBuilder
+                        .append("(j.title1 ILIKE '%")
+                        .append(searchStrings.get(i))
+                        .append("%' ")
+                        .append("OR j.title2 ILIKE '%")
+                        .append(searchStrings.get(i))
+                        .append("%')");
             }
-            stringBuilder.append(") ");
+            stringBuilder.append(")");
             isWhereClauseNeeded = false;
         }
 
@@ -64,26 +72,31 @@ public class QueryService {
                 if (i > 0) {
                     stringBuilder.append(" OR ");
                 }
-                stringBuilder.append(" t.value = '").append(tagStrings.get(i)).append("' ");
+                stringBuilder
+                        .append("t.value = '")
+                        .append(tagStrings.get(i))
+                        .append("'");
             }
-            stringBuilder.append(") ");
-            stringBuilder.append(" GROUP BY j.id ");
-            stringBuilder.append(" HAVING COUNT(DISTINCT t.value) = " + tagStrings.size() + " ");
-            stringBuilder.append(" ");
+            stringBuilder
+                    .append(") ")
+                    .append("GROUP BY j.id ")
+                    .append("HAVING COUNT(DISTINCT t.value) = ")
+                    .append(tagStrings.size());
         }
         return stringBuilder.toString();
     }
 
     private long getCount(String whereCondition){
         String countQuery =
-                "SELECT COUNT(DISTINCT Sub.id) FROM (" +
-                        "   SELECT j.id " +
-                        "   FROM journal j " +
-                        "   LEFT JOIN journal_tag t_g ON j.id = t_g.journal_id " +
-                        "   LEFT JOIN tag t ON t_g.tag_id = t.id " +
-                        "   LEFT JOIN metadata m ON j.metadata_id = m.id " +
-                        whereCondition +
-                        ") AS Sub";
+                "SELECT COUNT(DISTINCT Sub.id) " +
+                "FROM (" +
+                "SELECT j.id " +
+                "FROM journal j " +
+                "LEFT JOIN journal_tag t_g ON j.id = t_g.journal_id " +
+                "LEFT JOIN tag t ON t_g.tag_id = t.id " +
+                "LEFT JOIN metadata m ON j.metadata_id = m.id " +
+                whereCondition +
+                ") AS Sub";
         Query query = entityManager.createNativeQuery(countQuery, Long.class);
         return (long) query.getSingleResult();
     }
@@ -91,14 +104,14 @@ public class QueryService {
     private List<Journal> getArticles(String whereCondition, String orderByCondition, int limit, int offset){
         String mainQuery =
                 "SELECT DISTINCT Sub.id, Sub.title1, Sub.issn1, Sub.eissn1, Sub.title2, Sub.issn2, Sub.eissn2, Sub.points, Sub.metadata_id " +
-                        "FROM ( " +
+                        "FROM (" +
                         "SELECT j.id, j.title1, j.issn1, j.eissn1, j.title2, j.issn2, j.eissn2, j.points, j.metadata_id " +
                         "FROM journal j " +
                         "LEFT JOIN journal_tag t_g ON j.id = t_g.journal_id " +
                         "LEFT JOIN tag t ON t_g.tag_id = t.id " +
                         "LEFT JOIN metadata m ON j.metadata_id = m.id " +
                         whereCondition +
-                        " ) AS Sub " +
+                        ") AS Sub " +
                         orderByCondition +
                         "LIMIT " + limit + " " +
                         "OFFSET " + offset;
