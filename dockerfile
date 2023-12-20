@@ -15,6 +15,3 @@ COPY src ./src
 EXPOSE 5432
 
 CMD ["./mvnw", "spring-boot:run"]
-
-#docker build -f dockerfile -t scijourdex-backend-image .
-#docker run -it --name scijourdex-container scijourdex-backend-image

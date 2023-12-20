@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     image: scijourdex-backend-image
-    container_name: scijourdex-container
+    container_name: scijourdex-backend-container
     ports:
       - "8081:8081"
     depends_on:
