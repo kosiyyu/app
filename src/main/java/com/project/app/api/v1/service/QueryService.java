@@ -101,7 +101,7 @@ public class QueryService {
         return (long) query.getSingleResult();
     }
 
-    private List<Journal> getArticles(String whereCondition, String orderByCondition, int limit, int offset){
+    private List<Journal> getJournals(String whereCondition, String orderByCondition, int limit, int offset){
         String mainQuery =
                 "SELECT DISTINCT Sub.id, Sub.title1, Sub.issn1, Sub.eissn1, Sub.title2, Sub.issn2, Sub.eissn2, Sub.points, Sub.metadata_id " +
                         "FROM (" +
@@ -138,7 +138,7 @@ public class QueryService {
 
         offset *= limit;
 
-        List<Journal> journals = getArticles(whereCondition, orderByCondition, limit, offset);
+        List<Journal> journals = getJournals(whereCondition, orderByCondition, limit, offset);
         return new CustomSearchDto(numberOfPages,searchTokenDto.pageIndex(),journals);
     }
 }
