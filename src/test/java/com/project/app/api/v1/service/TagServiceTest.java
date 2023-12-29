@@ -22,9 +22,9 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class TagServiceTest {
-    @Mock
-    private TagService tagService;
     @InjectMocks
+    private TagService tagService;
+    @Mock
     private TagRepository tagRepository;
 
     @BeforeEach
