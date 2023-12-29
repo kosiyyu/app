@@ -5,6 +5,8 @@ import com.project.app.api.v1.repository.TagRepository;
 import com.project.app.exception.AlreadyExistsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
@@ -17,7 +19,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class TagServiceTest {
+    @Mock
     private TagService tagService;
+    @InjectMocks
     private TagRepository tagRepository;
 
     @BeforeEach
