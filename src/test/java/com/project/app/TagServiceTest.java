@@ -1,7 +1,8 @@
-package com.project.app.api.v1.service;
+package com.project.app;
 
 import com.project.app.api.v1.entity.Tag;
 import com.project.app.api.v1.repository.TagRepository;
+import com.project.app.api.v1.service.TagService;
 import com.project.app.exception.AlreadyExistsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
