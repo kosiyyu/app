@@ -52,13 +52,9 @@ public class TagService {
     }
 
     public void safeSaveTag(Tag tag) throws IllegalArgumentException, AlreadyExistsException {
-        if(tag.getId() != 0){
-            throw new IllegalArgumentException();
-        }
         if(tagRepository.existsByValue(tag.getValue())){
             throw new AlreadyExistsException();
         }
         tagRepository.save(tag);
     }
-
 }
