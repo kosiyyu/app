@@ -12,14 +12,14 @@ spring:
     username: postgres
     password: Ala_Ma_K0ta
   jpa:
+    hibernate:
+      ddl-auto: create
     properties:
       hibernate:
-        #        dialect: org.hibernate.dialect.PostgresSQLDialect
-        ddl-auto: create-drop
         jdbc:
           batch_size: 1000
     generate-ddl: true
-    show-sql: false
+    show-sql: true  # set this to true to see the SQL statements in your logs
   servlet:
     multipart:
       max-file-size: 10GB

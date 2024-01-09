@@ -31,6 +31,10 @@ public class Journal {
     private String eissn2;
     @Column(name = "points")
     private Integer points;
+    @Column(name = "citeScore")
+    private Double citeScore;
+    @Column(name = "aimsAndScope", length = 8191)
+    private String aimsAndScope;
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(name = "journal_tag", joinColumns = @JoinColumn(name = "journal_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private List<Tag> tags;
@@ -38,7 +42,7 @@ public class Journal {
     @JoinColumn(name = "metadata_id")
     private Metadata metadata;
 
-    public Journal(String title1, String issn1, String eissn1, String title2, String issn2, String eissn2, Integer points) {
+    public Journal(String title1, String issn1, String eissn1, String title2, String issn2, String eissn2, Integer points, Double citeScore, String aimsAndScope) {
         this.title1 = title1;
         this.issn1 = issn1;
         this.eissn1 = eissn1;
@@ -46,6 +50,8 @@ public class Journal {
         this.issn2 = issn2;
         this.eissn2 = eissn2;
         this.points = points;
+        this.citeScore = citeScore;
+        this.aimsAndScope = aimsAndScope;
     }
 
     public Journal(String title1, String issn1, String eissn1, String title2, String issn2, String eissn2, Integer points, List<Tag> tags) {

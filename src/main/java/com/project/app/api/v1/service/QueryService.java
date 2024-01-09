@@ -103,9 +103,9 @@ public class QueryService {
 
     private List<Journal> getJournals(String whereCondition, String orderByCondition, int limit, int offset){
         String mainQuery =
-                "SELECT DISTINCT Sub.id, Sub.title1, Sub.issn1, Sub.eissn1, Sub.title2, Sub.issn2, Sub.eissn2, Sub.points, Sub.metadata_id " +
+                "SELECT DISTINCT Sub.id, Sub.title1, Sub.issn1, Sub.eissn1, Sub.title2, Sub.issn2, Sub.eissn2, Sub.points, Sub.metadata_id, Sub.aims_and_scope, Sub.cite_score " +
                         "FROM (" +
-                        "SELECT j.id, j.title1, j.issn1, j.eissn1, j.title2, j.issn2, j.eissn2, j.points, j.metadata_id " +
+                        "SELECT j.id, j.title1, j.issn1, j.eissn1, j.title2, j.issn2, j.eissn2, j.points, j.metadata_id, j.aims_and_scope, j.cite_score " +
                         "FROM journal j " +
                         "LEFT JOIN journal_tag t_g ON j.id = t_g.journal_id " +
                         "LEFT JOIN tag t ON t_g.tag_id = t.id " +
@@ -118,7 +118,6 @@ public class QueryService {
 
         return entityManager.createNativeQuery(mainQuery, Journal.class).getResultList();
     }
-
 
     public CustomSearchDto query(SearchTokenDto searchTokenDto) {
         int limit = Math.min(searchTokenDto.pageSize(), 100);
