@@ -13,7 +13,7 @@ spring:
     password: Ala_Ma_K0ta
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         jdbc:
@@ -24,8 +24,6 @@ spring:
     multipart:
       max-file-size: 10GB
       max-request-size: 10GB
-
-
 
 # Links
 logging:

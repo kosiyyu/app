@@ -33,7 +33,7 @@ public class QueryService {
         return condition;
     }
 
-    private String whereCondition(List<String> searchStrings, List<String> tagStrings, boolean isOr){
+    private String whereCondition(List<String> searchStrings, List<String> tagStrings, boolean isOr, String similarityString, double similarityValue){
         StringBuilder stringBuilder = new StringBuilder();
 
         String searchStringsOperator = isOr ? "OR" : "AND";
@@ -83,6 +83,21 @@ public class QueryService {
                     .append("HAVING COUNT(DISTINCT t.value) = ")
                     .append(tagStrings.size());
         }
+
+        if (!(similarityString.isEmpty() || similarityValue > 1 || similarityValue < 0)) {
+            if(isWhereClauseNeeded){
+                stringBuilder.append("WHERE (");
+            }
+            else {
+                stringBuilder.append(" AND (");
+            }
+            stringBuilder
+                    .append("SIMILARITY(LOWER(COALESCE(j.aims_and_scope, '')), LOWER('")
+                    .append(similarityString)
+                    .append("')) >= ")
+                    .append(similarityValue)
+                    .append(")");
+        }
         return stringBuilder.toString();
     }
 
@@ -90,7 +105,7 @@ public class QueryService {
         String countQuery =
                 "SELECT COUNT(DISTINCT Sub.id) " +
                 "FROM (" +
-                "SELECT j.id " +
+                "SELECT j.id, j.aims_and_scope " +
                 "FROM journal j " +
                 "LEFT JOIN journal_tag t_g ON j.id = t_g.journal_id " +
                 "LEFT JOIN tag t ON t_g.tag_id = t.id " +
@@ -126,7 +141,7 @@ public class QueryService {
             return new CustomSearchDto(0, offset, Collections.emptyList());
         }
 
-        String whereCondition = whereCondition(searchTokenDto.searchStrings(), searchTokenDto.tagStrings(), searchTokenDto.isOr());
+        String whereCondition = whereCondition(searchTokenDto.searchStrings(), searchTokenDto.tagStrings(), searchTokenDto.isOr(), searchTokenDto.similarityString(), searchTokenDto.similarityValue());
         String orderByCondition = orderByCondition(searchTokenDto.orderByArgument(), searchTokenDto.isDescSort());
 
         long count = getCount(whereCondition);
