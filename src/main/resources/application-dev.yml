@@ -19,7 +19,8 @@ spring:
         jdbc:
           batch_size: 1000
     generate-ddl: true
-    show-sql: true  # set this to true to see the SQL statements in your logs
+    show-sql: true
+    defer-datasource-initialization: true
   servlet:
     multipart:
       max-file-size: 10GB
