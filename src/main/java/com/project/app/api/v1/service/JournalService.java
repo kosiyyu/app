@@ -60,6 +60,7 @@ public class JournalService {
                 .filter(x -> x > 0);
     }
 
+    @Transactional
     public void saveAllJournalsWithUniqueTags(List<Journal> journals) {
         for (Journal journal : journals) {
             for (int i = 0; i < journal.getTags().size(); i++) {

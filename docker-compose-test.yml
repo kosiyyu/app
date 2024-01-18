@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  postgres-test:
+    image: postgres:15.4
+    container_name: postgres-test-container
+    environment:
+      POSTGRES_DB: test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Ala_Ma_K0ta
+    ports:
+      - 5433:5432
+
+
+      

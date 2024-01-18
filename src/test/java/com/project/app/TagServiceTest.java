@@ -4,126 +4,132 @@ import com.project.app.api.v1.entity.Tag;
 import com.project.app.api.v1.repository.TagRepository;
 import com.project.app.api.v1.service.TagService;
 import com.project.app.exception.AlreadyExistsException;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@ActiveProfiles("test")
 public class TagServiceTest {
-    @InjectMocks
+
+    @Autowired
     private TagService tagService;
-    @Mock
+
+    @Autowired
     private TagRepository tagRepository;
 
-    @BeforeEach
-    public void setup() {
-        tagRepository = Mockito.mock(TagRepository.class);
-        tagService = new TagService(tagRepository);
+    @AfterEach
+    public void reset() {
+        tagRepository.deleteAll();
     }
 
     @Test
     public void testSaveTag() {
         Tag tag = new Tag();
-        tag.setValue("TEST");
-
+        tag.setValue("Test Tag");
         tagService.saveTag(tag);
 
-        verify(tagRepository).save(tag);
+        Optional<Tag> savedTag = tagService.getFirstTagByValue("Test Tag");
+        assertTrue(savedTag.isPresent());
+        assertEquals("Test Tag", savedTag.get().getValue());
+    }
+
+    @Test
+    public void testEditTag() {
+        try {
+            Tag tag = new Tag();
+            tag.setValue("Test Tag");
+            tagService.saveTag(tag);
+
+            Tag savedTag = tagService.getFirstTagByValue("Test Tag").orElseThrow();
+            savedTag.setValue("Updated Tag");
+            tagService.editTag(savedTag);
+
+            Optional<Tag> updatedTag = tagService.getFirstTagByValue("Updated Tag");
+            assertTrue(updatedTag.isPresent());
+            assertEquals("Updated Tag", updatedTag.get().getValue());
+        } catch (Exception e) {
+            fail("Exception should not be thrown: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testSafeSaveTag() {
+        Tag tag = new Tag();
+        tag.setValue("Test Tag");
+
+        Tag tag1 = new Tag();
+        tag1.setValue("Test Tag");
+
+        assertThrows(AlreadyExistsException.class, () -> {
+            tagService.safeSaveTag(tag);
+            tagService.safeSaveTag(tag1);
+        });
     }
 
     @Test
     public void testGetTags() {
         Tag tag1 = new Tag();
+        tag1.setValue("Test Tag 1");
+        tagService.saveTag(tag1);
+
         Tag tag2 = new Tag();
-        when(tagRepository.findAll()).thenReturn(Arrays.asList(tag1, tag2));
+        tag2.setValue("Test Tag 2");
+        tagService.saveTag(tag2);
 
         List<Tag> tags = tagService.getTags();
-
         assertEquals(2, tags.size());
-        verify(tagRepository).findAll();
-    }
-
-    @Test
-    public void testGetTag() {
-        Tag tag = new Tag();
-        tag.setId(1);
-        when(tagRepository.findById(1)).thenReturn(Optional.of(tag));
-
-        Optional<Tag> result = tagService.getTag(1);
-
-        assertTrue(result.isPresent());
-        assertEquals(tag, result.get());
+        assertTrue(tags.stream().anyMatch(tag -> tag.getValue().equals("Test Tag 1")));
+        assertTrue(tags.stream().anyMatch(tag -> tag.getValue().equals("Test Tag 2")));
     }
 
     @Test
     public void testGetFirstTagByValue() {
+       Tag tag = new Tag();
+       tag.setValue("Test Tag");
+       tagService.saveTag(tag);
+
+       Optional<Tag> retrievedTag = tagService.getFirstTagByValue("Test Tag");
+       assertTrue(retrievedTag.isPresent());
+       assertEquals("Test Tag", retrievedTag.get().getValue());
+
+       Optional<Tag> nonexistentTag = tagService.getFirstTagByValue("Nonexistent Tag");
+       assertFalse(nonexistentTag.isPresent());
+        // assertEquals(1, 1);
+    }
+
+    @Test
+    public void testGetTag() {
+       Tag tag = new Tag();
+       tag.setValue("Test Tag");
+       tagService.saveTag(tag);
+
+       Tag savedTag = tagService.getFirstTagByValue("Test Tag").orElseThrow();
+       Optional<Tag> retrievedTag = tagService.getTag(savedTag.getId());
+
+       assertTrue(retrievedTag.isPresent());
+       assertEquals("Test Tag", retrievedTag.get().getValue());
+        // assertEquals(1, 1);
+    }
+
+    @Test
+    public void testDeleteTag() {
         Tag tag = new Tag();
-        tag.setValue("TEST");
-        when(tagRepository.findFirstByValue("TEST")).thenReturn(Optional.of(tag));
+        tag.setValue("Test Tag");
+        tagService.saveTag(tag);
 
-        Optional<Tag> result = tagService.getFirstTagByValue("TEST");
+        Tag savedTag = tagService.getFirstTagByValue("Test Tag").orElseThrow();
+        tagService.deleteTag(savedTag.getId());
 
-        assertTrue(result.isPresent());
-        assertEquals(tag, result.get());
+        Optional<Tag> deletedTag = tagService.getFirstTagByValue("Test Tag");
+        assertFalse(deletedTag.isPresent());
     }
 
-    @Test
-    public void testEditTag() throws NoSuchElementException, AlreadyExistsException {
-        Tag originalTag = new Tag();
-        originalTag.setId(1);
-        originalTag.setValue("originalValue");
-
-        Tag newTag = new Tag();
-        newTag.setId(1);
-        newTag.setValue("newValue");
-
-        when(tagRepository.findById(1)).thenReturn(Optional.of(originalTag));
-        when(tagRepository.existsByValue("newValue")).thenReturn(false);
-
-        tagService.editTag(newTag);
-
-        assertEquals("newValue", originalTag.getValue());
-        verify(tagRepository).save(originalTag);
-    }
-
-    @Test
-    public void testDeleteTag() throws NoSuchElementException {
-        Tag tag = new Tag();
-        tag.setId(1);
-        when(tagRepository.findById(1)).thenReturn(Optional.of(tag));
-
-        tagService.deleteTag(1);
-
-        verify(tagRepository).deleteById(1);
-    }
-
-    @Test
-    public void testSafeSaveTag() {
-        Tag tag1 = new Tag();
-        tag1.setValue("TEST");
-
-        Tag tag2 = new Tag();
-        tag2.setValue("TEST");
-
-        tagService.saveTag(tag1);
-
-        when(tagRepository.existsByValue("TEST")).thenReturn(true);
-
-        assertThrows(AlreadyExistsException.class, () -> {
-            tagService.safeSaveTag(tag2);
-        });
-    }
 }
